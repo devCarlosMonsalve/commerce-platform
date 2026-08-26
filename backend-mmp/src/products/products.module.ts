@@ -7,6 +7,8 @@ import { UpdateProductUseCase } from './application/use-cases/update-product.use
 import { PRODUCT_REPOSITORY } from './domain/product.repository';
 import { PrismaProductRepository } from './infrastructure/persistence/prisma-product.repository';
 import { ProductsController } from './infrastructure/products.controller';
+import { OrganizationMemberGuard } from '../shared/guards/organization-member.guard';
+import { RolesGuard } from '../shared/guards/roles.guard';
 
 @Module({
   controllers: [ProductsController],
@@ -16,6 +18,8 @@ import { ProductsController } from './infrastructure/products.controller';
     GetProductUseCase,
     UpdateProductUseCase,
     DeleteProductUseCase,
+    OrganizationMemberGuard,
+    RolesGuard,
     { provide: PRODUCT_REPOSITORY, useClass: PrismaProductRepository },
   ],
 })

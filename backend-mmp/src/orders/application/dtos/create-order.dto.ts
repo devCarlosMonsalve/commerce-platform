@@ -16,11 +16,6 @@ export class OrderItemDto {
   @IsNumber()
   @Min(1)
   quantity: number;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  unitPrice: number;
 }
 
 export class CreateOrderDto {

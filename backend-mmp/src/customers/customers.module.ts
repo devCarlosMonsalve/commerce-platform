@@ -7,6 +7,7 @@ import { UpdateCustomerUseCase } from './application/use-cases/update-customer.u
 import { CUSTOMER_REPOSITORY } from './domain/customer.repository';
 import { CustomersController } from './infrastructure/customers.controller';
 import { PrismaCustomerRepository } from './infrastructure/persistence/prisma-customer.repository';
+import { OrganizationMemberGuard } from '../shared/guards/organization-member.guard';
 
 @Module({
   controllers: [CustomersController],
@@ -16,6 +17,7 @@ import { PrismaCustomerRepository } from './infrastructure/persistence/prisma-cu
     GetCustomerUseCase,
     UpdateCustomerUseCase,
     DeleteCustomerUseCase,
+    OrganizationMemberGuard,
     { provide: CUSTOMER_REPOSITORY, useClass: PrismaCustomerRepository },
   ],
 })

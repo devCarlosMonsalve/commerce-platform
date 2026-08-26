@@ -7,6 +7,8 @@ import { UpdateOrderStatusUseCase } from './application/use-cases/update-order-s
 import { ORDER_REPOSITORY } from './domain/order.repository';
 import { OrdersController } from './infrastructure/orders.controller';
 import { PrismaOrderRepository } from './infrastructure/persistence/prisma-order.repository';
+import { OrganizationMemberGuard } from '../shared/guards/organization-member.guard';
+import { RolesGuard } from '../shared/guards/roles.guard';
 
 @Module({
   controllers: [OrdersController],
@@ -16,6 +18,8 @@ import { PrismaOrderRepository } from './infrastructure/persistence/prisma-order
     GetOrderUseCase,
     UpdateOrderStatusUseCase,
     DeleteOrderUseCase,
+    OrganizationMemberGuard,
+    RolesGuard,
     { provide: ORDER_REPOSITORY, useClass: PrismaOrderRepository },
   ],
 })

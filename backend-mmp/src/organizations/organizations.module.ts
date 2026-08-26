@@ -7,6 +7,8 @@ import { UpdateOrganizationUseCase } from './application/use-cases/update-organi
 import { ORGANIZATION_REPOSITORY } from './domain/organization.repository';
 import { OrganizationsController } from './infrastructure/organizations.controller';
 import { PrismaOrganizationRepository } from './infrastructure/persistence/prisma-organization.repository';
+import { OrganizationMemberGuard } from '../shared/guards/organization-member.guard';
+import { RolesGuard } from '../shared/guards/roles.guard';
 
 @Module({
   controllers: [OrganizationsController],
@@ -16,6 +18,8 @@ import { PrismaOrganizationRepository } from './infrastructure/persistence/prism
     GetOrganizationUseCase,
     UpdateOrganizationUseCase,
     DeleteOrganizationUseCase,
+    OrganizationMemberGuard,
+    RolesGuard,
     { provide: ORGANIZATION_REPOSITORY, useClass: PrismaOrganizationRepository },
   ],
 })

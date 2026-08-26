@@ -8,8 +8,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { MembershipRole } from '@prisma/client';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
+import { Roles } from '../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { OrganizationMemberGuard } from '../../shared/guards/organization-member.guard';
+import { RolesGuard } from '../../shared/guards/roles.guard';
 import { CreateOrganizationDto } from '../application/dtos/create-organization.dto';
 import { UpdateOrganizationDto } from '../application/dtos/update-organization.dto';
 import { CreateOrganizationUseCase } from '../application/use-cases/create-organization.use-case';
@@ -19,7 +23,6 @@ import { ListOrganizationsUseCase } from '../application/use-cases/list-organiza
 import { UpdateOrganizationUseCase } from '../application/use-cases/update-organization.use-case';
 
 @Controller('organizations')
-@UseGuards(JwtAuthGuard)
 export class OrganizationsController {
   constructor(
     private readonly createOrganizationUseCase: CreateOrganizationUseCase,
@@ -30,6 +33,7 @@ export class OrganizationsController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @CurrentUser() user: { sub: string; email: string },
     @Body() dto: CreateOrganizationDto,
@@ -38,11 +42,13 @@ export class OrganizationsController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   list(@CurrentUser() user: { sub: string; email: string }) {
     return this.listOrganizationsUseCase.execute(user.sub);
   }
 
   @Get(':orgId')
+  @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
   get(
     @CurrentUser() user: { sub: string; email: string },
     @Param('orgId') orgId: string,
@@ -51,6 +57,8 @@ export class OrganizationsController {
   }
 
   @Patch(':orgId')
+  @Roles(MembershipRole.OWNER, MembershipRole.ADMIN)
+  @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
   update(
     @CurrentUser() user: { sub: string; email: string },
     @Param('orgId') orgId: string,
@@ -60,6 +68,8 @@ export class OrganizationsController {
   }
 
   @Delete(':orgId')
+  @Roles(MembershipRole.OWNER)
+  @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
   remove(
     @CurrentUser() user: { sub: string; email: string },
     @Param('orgId') orgId: string,
