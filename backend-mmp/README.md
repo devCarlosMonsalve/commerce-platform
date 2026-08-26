@@ -1,2 +1,2 @@
 # backend-mmp
-Backend API for My Market Place - built with NestJS
+Backend API for Commerce Platform - built with NestJS

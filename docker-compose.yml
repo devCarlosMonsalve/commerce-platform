@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:16
-    container_name: my_marketplace_db
+    container_name: commerce_platform_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: my_marketplace
+      POSTGRES_PASSWORD: MyM4rk3t_Db#2026
+      POSTGRES_DB: commerce_platform
     ports:
       - '5432:5432'
     volumes:

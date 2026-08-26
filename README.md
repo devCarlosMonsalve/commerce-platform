@@ -1,2 +1,2 @@
-# my-market-place
-Full-stack marketplace app built with Next.js, NestJS, PostgreSQL, Prisma, Docker, and TypeScript
+# commerce-platform
+Full-stack commerce platform built with Next.js, NestJS, PostgreSQL, Prisma, Docker, and TypeScript
