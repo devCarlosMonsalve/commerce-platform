@@ -1,0 +1,93 @@
+{
+  "common": {
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "search": "Search",
+    "actions": "Actions",
+    "confirm": "Confirm"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "organizations": "Organizations",
+    "products": "Products",
+    "customers": "Customers",
+    "orders": "Orders",
+    "settings": "Settings"
+  },
+  "home": {
+    "badge": "Multi-tenant commerce platform",
+    "title": "Commerce",
+    "titleAccent": "Command Center",
+    "description": "Manage products, customers, and orders across multiple organizations — all from one place.",
+    "statOrgs": "∞ Orgs",
+    "statOrgsLabel": "Multi-tenant",
+    "statOrders": "Orders",
+    "statOrdersLabel": "Real-time",
+    "statAccess": "Access",
+    "statAccessLabel": "Role-based"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "organizations": {
+    "title": "Organizations",
+    "create": "New organization",
+    "name": "Name",
+    "slug": "Slug",
+    "noOrganizations": "No organizations yet"
+  },
+  "products": {
+    "title": "Products",
+    "create": "New product",
+    "name": "Name",
+    "price": "Price",
+    "stock": "Stock",
+    "sku": "SKU",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noProducts": "No products yet"
+  },
+  "customers": {
+    "title": "Customers",
+    "create": "New customer",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "noCustomers": "No customers yet"
+  },
+  "orders": {
+    "title": "Orders",
+    "create": "New order",
+    "status": "Status",
+    "total": "Total",
+    "items": "Items",
+    "customer": "Customer",
+    "draft": "Draft",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "noOrders": "No orders yet"
+  },
+  "errors": {
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Access denied",
+    "serverError": "Server error"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "common": {
+    "getStarted": "Comenzar",
+    "learnMore": "Saber más",
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Volver",
+    "search": "Buscar",
+    "actions": "Acciones",
+    "confirm": "Confirmar"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "organizations": "Organizaciones",
+    "products": "Productos",
+    "customers": "Clientes",
+    "orders": "Pedidos",
+    "settings": "Ajustes"
+  },
+  "home": {
+    "badge": "Plataforma de comercio multi-tenant",
+    "title": "Centro de",
+    "titleAccent": "Operaciones",
+    "description": "Gestiona productos, clientes y pedidos en múltiples organizaciones, todo desde un mismo lugar.",
+    "statOrgs": "Orgs",
+    "statOrgsLabel": "Multi-tenant",
+    "statOrders": "Pedidos",
+    "statOrdersLabel": "Tiempo real",
+    "statAccess": "Acceso",
+    "statAccessLabel": "Por roles"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?"
+  },
+  "organizations": {
+    "title": "Organizaciones",
+    "create": "Nueva organización",
+    "name": "Nombre",
+    "slug": "Slug",
+    "noOrganizations": "No tienes organizaciones aún"
+  },
+  "products": {
+    "title": "Productos",
+    "create": "Nuevo producto",
+    "name": "Nombre",
+    "price": "Precio",
+    "stock": "Stock",
+    "sku": "SKU",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "noProducts": "No hay productos aún"
+  },
+  "customers": {
+    "title": "Clientes",
+    "create": "Nuevo cliente",
+    "name": "Nombre",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "noCustomers": "No hay clientes aún"
+  },
+  "orders": {
+    "title": "Pedidos",
+    "create": "Nuevo pedido",
+    "status": "Estado",
+    "total": "Total",
+    "items": "Artículos",
+    "customer": "Cliente",
+    "draft": "Borrador",
+    "pending": "Pendiente",
+    "confirmed": "Confirmado",
+    "cancelled": "Cancelado",
+    "noOrders": "No hay pedidos aún"
+  },
+  "errors": {
+    "notFound": "No encontrado",
+    "unauthorized": "No autorizado",
+    "forbidden": "Acceso denegado",
+    "serverError": "Error del servidor"
+  }
+}

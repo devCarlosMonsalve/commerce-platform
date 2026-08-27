@@ -1,27 +1,40 @@
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 export default function HomePage() {
-  return (
-    <Box className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
-      sx={{ bgcolor: 'background.default' }}>
+  const t = useTranslations('home');
+  const common = useTranslations('common');
 
-      {/* Background glow — tonos tierra */}
+  return (
+    <Box
+      className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
+      sx={{ bgcolor: 'background.default' }}
+    >
+      <Box className="absolute top-4 right-6 z-20">
+        <LanguageSwitcher />
+      </Box>
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-[140px]"
-          style={{ background: 'rgba(92,107,64,0.18)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px]"
-          style={{ background: 'rgba(196,154,108,0.12)' }} />
+        <div
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-[140px]"
+          style={{ background: 'rgba(92,107,64,0.18)' }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px]"
+          style={{ background: 'rgba(196,154,108,0.12)' }}
+        />
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-3xl gap-6">
         <Chip
           icon={<AutoAwesomeIcon sx={{ fontSize: 14 }} />}
-          label="Multi-tenant Commerce Platform"
+          label={t('badge')}
           variant="outlined"
           size="small"
           sx={{ borderColor: 'rgba(168,192,144,0.35)', color: '#A8C090', fontSize: '0.75rem' }}
@@ -39,7 +52,7 @@ export default function HomePage() {
             WebkitTextFillColor: 'transparent',
           }}
         >
-          Commerce{' '}
+          {t('title')}{' '}
           <Box
             component="span"
             sx={{
@@ -48,7 +61,7 @@ export default function HomePage() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Command Center
+            {t('titleAccent')}
           </Box>
         </Typography>
 
@@ -56,8 +69,7 @@ export default function HomePage() {
           variant="h6"
           sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 500, lineHeight: 1.6 }}
         >
-          Manage products, customers, and orders across multiple organizations —
-          all from one place.
+          {t('description')}
         </Typography>
 
         <Box className="flex gap-3 mt-2">
@@ -72,7 +84,7 @@ export default function HomePage() {
               px: 4,
             }}
           >
-            Get Started
+            {common('getStarted')}
           </Button>
           <Button
             variant="outlined"
@@ -84,16 +96,15 @@ export default function HomePage() {
               '&:hover': { borderColor: 'rgba(168,192,144,0.4)', bgcolor: 'rgba(168,192,144,0.05)' },
             }}
           >
-            Learn More
+            {common('learnMore')}
           </Button>
         </Box>
 
-        {/* Stats */}
         <Box className="grid grid-cols-3 gap-8 mt-12 w-full max-w-md">
           {[
-            { label: 'Multi-tenant', value: '∞ Orgs', color: '#A8C090' },
-            { label: 'Real-time', value: 'Orders', color: '#C49A6C' },
-            { label: 'Role-based', value: 'Access', color: '#8B5A35' },
+            { label: t('statOrgsLabel'), value: t('statOrgs'), color: '#A8C090' },
+            { label: t('statOrdersLabel'), value: t('statOrders'), color: '#C49A6C' },
+            { label: t('statAccessLabel'), value: t('statAccess'), color: '#8B5A35' },
           ].map((stat) => (
             <Box key={stat.label} className="flex flex-col items-center gap-1">
               <Typography variant="h6" sx={{ color: stat.color, fontWeight: 700 }}>
@@ -109,4 +120,3 @@ export default function HomePage() {
     </Box>
   );
 }
-

@@ -1,0 +1,93 @@
+{
+  "common": {
+    "getStarted": "Commencer",
+    "learnMore": "En savoir plus",
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "search": "Rechercher",
+    "actions": "Actions",
+    "confirm": "Confirmer"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "organizations": "Organisations",
+    "products": "Produits",
+    "customers": "Clients",
+    "orders": "Commandes",
+    "settings": "Paramètres"
+  },
+  "home": {
+    "badge": "Plateforme commerciale multi-tenant",
+    "title": "Centre de",
+    "titleAccent": "Commande Commerce",
+    "description": "Gérez vos produits, clients et commandes dans plusieurs organisations, tout en un seul endroit.",
+    "statOrgs": "∞ Orgs",
+    "statOrgsLabel": "Multi-tenant",
+    "statOrders": "Commandes",
+    "statOrdersLabel": "Temps réel",
+    "statAccess": "Accès",
+    "statAccessLabel": "Par rôles"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Se déconnecter",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "name": "Nom",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà un compte ?"
+  },
+  "organizations": {
+    "title": "Organisations",
+    "create": "Nouvelle organisation",
+    "name": "Nom",
+    "slug": "Identifiant",
+    "noOrganizations": "Aucune organisation pour l'instant"
+  },
+  "products": {
+    "title": "Produits",
+    "create": "Nouveau produit",
+    "name": "Nom",
+    "price": "Prix",
+    "stock": "Stock",
+    "sku": "Référence",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "noProducts": "Aucun produit pour l'instant"
+  },
+  "customers": {
+    "title": "Clients",
+    "create": "Nouveau client",
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "noCustomers": "Aucun client pour l'instant"
+  },
+  "orders": {
+    "title": "Commandes",
+    "create": "Nouvelle commande",
+    "status": "Statut",
+    "total": "Total",
+    "items": "Articles",
+    "customer": "Client",
+    "draft": "Brouillon",
+    "pending": "En attente",
+    "confirmed": "Confirmé",
+    "cancelled": "Annulé",
+    "noOrders": "Aucune commande pour l'instant"
+  },
+  "errors": {
+    "notFound": "Introuvable",
+    "unauthorized": "Non autorisé",
+    "forbidden": "Accès refusé",
+    "serverError": "Erreur serveur"
+  }
+}
