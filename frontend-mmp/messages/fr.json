@@ -26,6 +26,9 @@
     "title": "Centre de",
     "titleAccent": "Commande Commerce",
     "description": "Gérez vos produits, clients et commandes dans plusieurs organisations, tout en un seul endroit.",
+    "featureTenants": "Espace multi-tenant conçu pour des équipes en croissance",
+    "featureOrders": "Flux unifiés pour produits, clients et commandes",
+    "featureRoles": "Accès sécurisé basé sur les rôles entre organisations",
     "statOrgs": "∞ Orgs",
     "statOrgsLabel": "Multi-tenant",
     "statOrders": "Commandes",
@@ -42,7 +45,8 @@
     "name": "Nom",
     "forgotPassword": "Mot de passe oublié ?",
     "noAccount": "Pas encore de compte ?",
-    "hasAccount": "Déjà un compte ?"
+    "hasAccount": "Déjà un compte ?",
+    "genericError": "Une erreur est survenue. Veuillez réessayer."
   },
   "organizations": {
     "title": "Organisations",

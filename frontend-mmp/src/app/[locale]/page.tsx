@@ -1,4 +1,7 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -22,12 +25,12 @@ export default function HomePage() {
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-[140px]"
-          style={{ background: 'rgba(92,107,64,0.18)' }}
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[120px]"
+          style={{ background: 'rgba(168,192,144,0.25)' }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px]"
-          style={{ background: 'rgba(196,154,108,0.12)' }}
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[100px]"
+          style={{ background: 'rgba(196,154,108,0.15)' }}
         />
       </div>
 
@@ -37,7 +40,7 @@ export default function HomePage() {
           label={t('badge')}
           variant="outlined"
           size="small"
-          sx={{ borderColor: 'rgba(168,192,144,0.35)', color: '#A8C090', fontSize: '0.75rem' }}
+          sx={{ borderColor: 'rgba(92,107,64,0.4)', color: '#5C6B40', fontSize: '0.75rem', bgcolor: 'rgba(92,107,64,0.06)' }}
         />
 
         <Typography
@@ -47,16 +50,14 @@ export default function HomePage() {
             fontWeight: 800,
             lineHeight: 1.1,
             letterSpacing: '-0.03em',
-            background: 'linear-gradient(135deg, #EDE8D8 0%, #9E9588 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: '#2C2C20',
           }}
         >
           {t('title')}{' '}
           <Box
             component="span"
             sx={{
-              background: 'linear-gradient(135deg, #A8C090 0%, #C49A6C 100%)',
+              background: 'linear-gradient(135deg, #5C6B40 0%, #C49A6C 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -73,36 +74,25 @@ export default function HomePage() {
         </Typography>
 
         <Box className="flex gap-3 mt-2">
-          <Button
-            variant="contained"
-            size="large"
-            endIcon={<ArrowForwardIcon />}
-            sx={{
-              background: 'linear-gradient(135deg, #5C6B40 0%, #A8C090 100%)',
-              color: '#1a1f14',
-              fontWeight: 600,
-              px: 4,
-            }}
-          >
-            {common('getStarted')}
-          </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            sx={{
-              borderColor: 'rgba(168,192,144,0.2)',
-              color: 'text.secondary',
-              px: 4,
-              '&:hover': { borderColor: 'rgba(168,192,144,0.4)', bgcolor: 'rgba(168,192,144,0.05)' },
-            }}
-          >
-            {common('learnMore')}
-          </Button>
+          <Link href="/register" style={{ textDecoration: 'none' }}>
+            <Button variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ px: 4 }}>
+              {common('getStarted')}
+            </Button>
+          </Link>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{ px: 4, color: 'text.secondary', borderColor: 'rgba(92,107,64,0.25)' }}
+            >
+              {common('learnMore')}
+            </Button>
+          </Link>
         </Box>
 
         <Box className="grid grid-cols-3 gap-8 mt-12 w-full max-w-md">
           {[
-            { label: t('statOrgsLabel'), value: t('statOrgs'), color: '#A8C090' },
+            { label: t('statOrgsLabel'), value: t('statOrgs'), color: '#5C6B40' },
             { label: t('statOrdersLabel'), value: t('statOrders'), color: '#C49A6C' },
             { label: t('statAccessLabel'), value: t('statAccess'), color: '#8B5A35' },
           ].map((stat) => (

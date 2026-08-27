@@ -26,6 +26,9 @@
     "title": "Commerce",
     "titleAccent": "Command Center",
     "description": "Manage products, customers, and orders across multiple organizations — all from one place.",
+    "featureTenants": "Multi-tenant workspace built for growing teams",
+    "featureOrders": "Unified product, customer, and order workflows",
+    "featureRoles": "Secure, role-based access across organizations",
     "statOrgs": "∞ Orgs",
     "statOrgsLabel": "Multi-tenant",
     "statOrders": "Orders",
@@ -42,7 +45,8 @@
     "name": "Name",
     "forgotPassword": "Forgot your password?",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "genericError": "Something went wrong. Please try again."
   },
   "organizations": {
     "title": "Organizations",

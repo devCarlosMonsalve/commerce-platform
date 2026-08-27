@@ -1,20 +1,28 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
-import { useTransition } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTransition, useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import LanguageIcon from '@mui/icons-material/Language';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useState } from 'react';
 
 const locales = [
   { code: 'es', label: 'Español', flag: '🇪🇸' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
 ];
+
+function stripLocale(path: string): string {
+  for (const l of locales) {
+    if (path === '/' + l.code || path.startsWith('/' + l.code + '/')) {
+      return path.slice(l.code.length + 1) || '/';
+    }
+  }
+  return path;
+}
 
 export function LanguageSwitcher() {
   const locale = useLocale();
@@ -27,15 +35,11 @@ export function LanguageSwitcher() {
 
   const handleSwitch = (newLocale: string) => {
     setAnchorEl(null);
-
-    // Reemplaza el prefijo del locale en la URL actual
-    const segments = pathname.split('/');
-    const isLocalePrefix = locales.some((l) => l.code === segments[1]);
-    const pathWithoutLocale = isLocalePrefix ? '/' + segments.slice(2).join('/') : pathname;
-    const newPath = newLocale === 'es' ? pathWithoutLocale || '/' : `/${newLocale}${pathWithoutLocale}`;
-
+    const basePath = stripLocale(pathname);
+    const newPath = newLocale === 'es' ? basePath : '/' + newLocale + (basePath === '/' ? '' : basePath);
     startTransition(() => {
       router.push(newPath);
+      router.refresh();
     });
   };
 
@@ -48,15 +52,14 @@ export function LanguageSwitcher() {
         onClick={(e) => setAnchorEl(e.currentTarget)}
         disabled={isPending}
         sx={{
-          color: 'text.secondary',
-          borderColor: 'rgba(168,192,144,0.2)',
+          color: '#5C6B40',
+          borderColor: 'rgba(92,107,64,0.3)',
           border: '1px solid',
           borderRadius: 2,
           px: 1.5,
           py: 0.5,
           fontSize: '0.8rem',
-          gap: 0.5,
-          '&:hover': { borderColor: 'rgba(168,192,144,0.4)', bgcolor: 'rgba(168,192,144,0.05)' },
+          '&:hover': { borderColor: 'rgba(92,107,64,0.6)', bgcolor: 'rgba(92,107,64,0.06)' },
         }}
       >
         {current.flag} {current.label}
@@ -71,8 +74,9 @@ export function LanguageSwitcher() {
             sx: {
               mt: 1,
               minWidth: 140,
-              bgcolor: 'background.paper',
-              border: '1px solid rgba(168,192,144,0.12)',
+              bgcolor: '#F5F0E8',
+              border: '1px solid rgba(92,107,64,0.15)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
             },
           },
         }}
@@ -85,7 +89,9 @@ export function LanguageSwitcher() {
             sx={{
               fontSize: '0.875rem',
               gap: 1,
-              '&.Mui-selected': { bgcolor: 'rgba(168,192,144,0.1)', color: '#A8C090' },
+              color: '#3a3a2e',
+              '&.Mui-selected': { bgcolor: 'rgba(92,107,64,0.12)', color: '#5C6B40', fontWeight: 600 },
+              '&:hover': { bgcolor: 'rgba(92,107,64,0.06)' },
             }}
           >
             {l.flag} {l.label}

@@ -26,6 +26,9 @@
     "title": "Centro de",
     "titleAccent": "Operaciones",
     "description": "Gestiona productos, clientes y pedidos en múltiples organizaciones, todo desde un mismo lugar.",
+    "featureTenants": "Espacio multi-tenant preparado para equipos en crecimiento",
+    "featureOrders": "Flujos unificados para productos, clientes y pedidos",
+    "featureRoles": "Acceso seguro basado en roles entre organizaciones",
     "statOrgs": "Orgs",
     "statOrgsLabel": "Multi-tenant",
     "statOrders": "Pedidos",
@@ -42,7 +45,8 @@
     "name": "Nombre",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tienes cuenta?",
-    "hasAccount": "¿Ya tienes cuenta?"
+    "hasAccount": "¿Ya tienes cuenta?",
+    "genericError": "Algo salió mal. Inténtalo de nuevo."
   },
   "organizations": {
     "title": "Organizaciones",

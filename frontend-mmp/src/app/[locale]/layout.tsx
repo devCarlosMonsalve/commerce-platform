@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { Providers } from '@/components/providers';
 import { routing } from '@/i18n/routing';
 import './globals.css';
@@ -32,10 +33,12 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full`}>
-      <body className="min-h-full bg-[#111210] antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <Providers>{children}</Providers>
-        </NextIntlClientProvider>
+      <body className="min-h-full bg-[#F5F0E8] antialiased">
+        <AppRouterCacheProvider>
+          <NextIntlClientProvider messages={messages}>
+            <Providers>{children}</Providers>
+          </NextIntlClientProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
