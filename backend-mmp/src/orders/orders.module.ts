@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { PRODUCT_REPOSITORY } from '../products/domain/product.repository';
+import { PrismaProductRepository } from '../products/infrastructure/persistence/prisma-product.repository';
 import { CreateOrderUseCase } from './application/use-cases/create-order.use-case';
 import { DeleteOrderUseCase } from './application/use-cases/delete-order.use-case';
 import { GetOrderUseCase } from './application/use-cases/get-order.use-case';
@@ -21,6 +23,7 @@ import { RolesGuard } from '../shared/guards/roles.guard';
     OrganizationMemberGuard,
     RolesGuard,
     { provide: ORDER_REPOSITORY, useClass: PrismaOrderRepository },
+    { provide: PRODUCT_REPOSITORY, useClass: PrismaProductRepository },
   ],
 })
 export class OrdersModule {}

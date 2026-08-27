@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MembershipRole } from '@prisma/client';
+import type { JwtPayload } from '../../shared/types/jwt-payload';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -36,68 +37,43 @@ export class OrganizationsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(
-    @CurrentUser() user: { sub: string; email: string },
-    @Body() dto: CreateOrganizationDto,
-  ) {
-    return this.createOrganizationUseCase
-      .execute(user.sub, dto)
-      .then((organization) =>
-        ok(
-          OrganizationResponse.from(organization),
-          'Organization created successfully',
-        ),
-      );
+  async create(@CurrentUser() user: JwtPayload, @Body() dto: CreateOrganizationDto) {
+    const organization = await this.createOrganizationUseCase.execute(user.sub, dto);
+    return ok(OrganizationResponse.from(organization), 'Organization created successfully');
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async list(@CurrentUser() user: { sub: string; email: string }) {
+  async list(@CurrentUser() user: JwtPayload) {
     const organizations = await this.listOrganizationsUseCase.execute(user.sub);
-    return ok(
-      organizations.map((organization) => OrganizationResponse.from(organization)),
-    );
+    return ok(organizations.map(OrganizationResponse.from));
   }
 
   @Get(':orgId')
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  get(
-    @CurrentUser() user: { sub: string; email: string },
-    @Param('orgId') orgId: string,
-  ) {
-    return this.getOrganizationUseCase
-      .execute(user.sub, orgId)
-      .then((organization) => ok(OrganizationResponse.from(organization)));
+  async get(@Param('orgId') orgId: string) {
+    const organization = await this.getOrganizationUseCase.execute(orgId);
+    return ok(OrganizationResponse.from(organization));
   }
 
   @Patch(':orgId')
   @Roles(MembershipRole.OWNER, MembershipRole.ADMIN)
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
-  update(
-    @CurrentUser() user: { sub: string; email: string },
+  async update(
+    @CurrentUser() user: JwtPayload,
     @Param('orgId') orgId: string,
     @Body() dto: UpdateOrganizationDto,
   ) {
-    return this.updateOrganizationUseCase
-      .execute(user.sub, orgId, dto)
-      .then((organization) =>
-        ok(
-          OrganizationResponse.from(organization),
-          'Organization updated successfully',
-        ),
-      );
+    const organization = await this.updateOrganizationUseCase.execute(user.sub, orgId, dto);
+    return ok(OrganizationResponse.from(organization), 'Organization updated successfully');
   }
 
   @Delete(':orgId')
   @Roles(MembershipRole.OWNER)
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
-  remove(
-    @CurrentUser() user: { sub: string; email: string },
-    @Param('orgId') orgId: string,
-  ) {
-    return this.deleteOrganizationUseCase.execute(user.sub, orgId).then(() => {
-      return ok(null, 'Deleted successfully');
-    });
+  async remove(@CurrentUser() user: JwtPayload, @Param('orgId') orgId: string) {
+    await this.deleteOrganizationUseCase.execute(user.sub, orgId);
+    return ok(null, 'Deleted successfully');
   }
 }
 

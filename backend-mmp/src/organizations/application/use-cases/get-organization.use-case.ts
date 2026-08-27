@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationEntity } from '../../domain/organization.entity';
 import { ORGANIZATION_REPOSITORY } from '../../domain/organization.repository';
 import type { IOrganizationRepository } from '../../domain/organization.repository';
@@ -15,23 +10,9 @@ export class GetOrganizationUseCase {
     private readonly organizationRepository: IOrganizationRepository,
   ) {}
 
-  async execute(
-    userId: string,
-    organizationId: string,
-  ): Promise<OrganizationEntity> {
+  async execute(organizationId: string): Promise<OrganizationEntity> {
     const organization = await this.organizationRepository.findById(organizationId);
-    if (!organization) {
-      throw new NotFoundException('Organization not found');
-    }
-
-    const membership = await this.organizationRepository.findMembership(
-      userId,
-      organizationId,
-    );
-    if (!membership) {
-      throw new ForbiddenException('Access denied');
-    }
-
+    if (!organization) throw new NotFoundException('Organization not found');
     return organization;
   }
 }

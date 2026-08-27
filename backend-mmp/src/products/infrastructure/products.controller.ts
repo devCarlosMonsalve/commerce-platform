@@ -49,14 +49,13 @@ export class ProductsController {
   @Patch(':productId')
   @Roles(MembershipRole.OWNER, MembershipRole.ADMIN)
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
-  update(
+  async update(
     @Param('orgId') orgId: string,
     @Param('productId') productId: string,
     @Body() dto: UpdateProductDto,
   ) {
-    return this.updateProductUseCase.execute(orgId, productId, dto).then((product) => {
-      return ok(ProductResponse.from(product), 'Product updated successfully');
-    });
+    const product = await this.updateProductUseCase.execute(orgId, productId, dto);
+    return ok(ProductResponse.from(product), 'Product updated successfully');
   }
 
   @Delete(':productId')

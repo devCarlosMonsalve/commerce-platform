@@ -48,14 +48,13 @@ export class OrdersController {
   @Patch(':orderId/status')
   @Roles(MembershipRole.OWNER, MembershipRole.ADMIN)
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
-  updateStatus(
+  async updateStatus(
     @Param('orgId') orgId: string,
     @Param('orderId') orderId: string,
     @Body() dto: UpdateOrderStatusDto,
   ) {
-    return this.updateOrderStatusUseCase.execute(orgId, orderId, dto).then((order) => {
-      return ok(OrderResponse.from(order), 'Order updated successfully');
-    });
+    const order = await this.updateOrderStatusUseCase.execute(orgId, orderId, dto);
+    return ok(OrderResponse.from(order), 'Order updated successfully');
   }
 
   @Delete(':orderId')

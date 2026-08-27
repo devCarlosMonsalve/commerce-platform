@@ -47,16 +47,13 @@ export class CustomersController {
 
   @Patch(':customerId')
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  update(
+  async update(
     @Param('orgId') orgId: string,
     @Param('customerId') customerId: string,
     @Body() dto: UpdateCustomerDto,
   ) {
-    return this.updateCustomerUseCase
-      .execute(orgId, customerId, dto)
-      .then((customer) =>
-        ok(CustomerResponse.from(customer), 'Customer updated successfully'),
-      );
+    const customer = await this.updateCustomerUseCase.execute(orgId, customerId, dto);
+    return ok(CustomerResponse.from(customer), 'Customer updated successfully');
   }
 
   @Delete(':customerId')
