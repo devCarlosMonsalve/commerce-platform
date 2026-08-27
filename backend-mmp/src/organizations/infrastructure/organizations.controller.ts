@@ -14,7 +14,9 @@ import { Roles } from '../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { OrganizationMemberGuard } from '../../shared/guards/organization-member.guard';
 import { RolesGuard } from '../../shared/guards/roles.guard';
+import { ok } from '../../shared/response/api-response';
 import { CreateOrganizationDto } from '../application/dtos/create-organization.dto';
+import { OrganizationResponse } from '../application/dtos/organization.response';
 import { UpdateOrganizationDto } from '../application/dtos/update-organization.dto';
 import { CreateOrganizationUseCase } from '../application/use-cases/create-organization.use-case';
 import { DeleteOrganizationUseCase } from '../application/use-cases/delete-organization.use-case';
@@ -38,13 +40,23 @@ export class OrganizationsController {
     @CurrentUser() user: { sub: string; email: string },
     @Body() dto: CreateOrganizationDto,
   ) {
-    return this.createOrganizationUseCase.execute(user.sub, dto);
+    return this.createOrganizationUseCase
+      .execute(user.sub, dto)
+      .then((organization) =>
+        ok(
+          OrganizationResponse.from(organization),
+          'Organization created successfully',
+        ),
+      );
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  list(@CurrentUser() user: { sub: string; email: string }) {
-    return this.listOrganizationsUseCase.execute(user.sub);
+  async list(@CurrentUser() user: { sub: string; email: string }) {
+    const organizations = await this.listOrganizationsUseCase.execute(user.sub);
+    return ok(
+      organizations.map((organization) => OrganizationResponse.from(organization)),
+    );
   }
 
   @Get(':orgId')
@@ -53,7 +65,9 @@ export class OrganizationsController {
     @CurrentUser() user: { sub: string; email: string },
     @Param('orgId') orgId: string,
   ) {
-    return this.getOrganizationUseCase.execute(user.sub, orgId);
+    return this.getOrganizationUseCase
+      .execute(user.sub, orgId)
+      .then((organization) => ok(OrganizationResponse.from(organization)));
   }
 
   @Patch(':orgId')
@@ -64,7 +78,14 @@ export class OrganizationsController {
     @Param('orgId') orgId: string,
     @Body() dto: UpdateOrganizationDto,
   ) {
-    return this.updateOrganizationUseCase.execute(user.sub, orgId, dto);
+    return this.updateOrganizationUseCase
+      .execute(user.sub, orgId, dto)
+      .then((organization) =>
+        ok(
+          OrganizationResponse.from(organization),
+          'Organization updated successfully',
+        ),
+      );
   }
 
   @Delete(':orgId')
@@ -74,6 +95,9 @@ export class OrganizationsController {
     @CurrentUser() user: { sub: string; email: string },
     @Param('orgId') orgId: string,
   ) {
-    return this.deleteOrganizationUseCase.execute(user.sub, orgId);
+    return this.deleteOrganizationUseCase.execute(user.sub, orgId).then(() => {
+      return ok(null, 'Deleted successfully');
+    });
   }
 }
+

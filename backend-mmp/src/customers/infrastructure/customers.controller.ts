@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { OrganizationMemberGuard } from '../../shared/guards/organization-member.guard';
+import { ok } from '../../shared/response/api-response';
+import { CustomerResponse } from '../application/dtos/customer.response';
 import { CreateCustomerDto } from '../application/dtos/create-customer.dto';
 import { UpdateCustomerDto } from '../application/dtos/update-customer.dto';
 import { CreateCustomerUseCase } from '../application/use-cases/create-customer.use-case';
@@ -21,20 +23,26 @@ export class CustomersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  create(@Param('orgId') orgId: string, @Body() dto: CreateCustomerDto) {
-    return this.createCustomerUseCase.execute(orgId, dto);
+  async create(@Param('orgId') orgId: string, @Body() dto: CreateCustomerDto) {
+    const customer = await this.createCustomerUseCase.execute(orgId, dto);
+    return ok(
+      CustomerResponse.from(customer),
+      'Customer created successfully',
+    );
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  list(@Param('orgId') orgId: string) {
-    return this.listCustomersUseCase.execute(orgId);
+  async list(@Param('orgId') orgId: string) {
+    const customers = await this.listCustomersUseCase.execute(orgId);
+    return ok(customers.map((customer) => CustomerResponse.from(customer)));
   }
 
   @Get(':customerId')
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  get(@Param('orgId') orgId: string, @Param('customerId') customerId: string) {
-    return this.getCustomerUseCase.execute(orgId, customerId);
+  async get(@Param('orgId') orgId: string, @Param('customerId') customerId: string) {
+    const customer = await this.getCustomerUseCase.execute(orgId, customerId);
+    return ok(CustomerResponse.from(customer));
   }
 
   @Patch(':customerId')
@@ -44,12 +52,18 @@ export class CustomersController {
     @Param('customerId') customerId: string,
     @Body() dto: UpdateCustomerDto,
   ) {
-    return this.updateCustomerUseCase.execute(orgId, customerId, dto);
+    return this.updateCustomerUseCase
+      .execute(orgId, customerId, dto)
+      .then((customer) =>
+        ok(CustomerResponse.from(customer), 'Customer updated successfully'),
+      );
   }
 
   @Delete(':customerId')
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard)
-  remove(@Param('orgId') orgId: string, @Param('customerId') customerId: string) {
-    return this.deleteCustomerUseCase.execute(orgId, customerId);
+  async remove(@Param('orgId') orgId: string, @Param('customerId') customerId: string) {
+    await this.deleteCustomerUseCase.execute(orgId, customerId);
+    return ok(null, 'Deleted successfully');
   }
 }
+
