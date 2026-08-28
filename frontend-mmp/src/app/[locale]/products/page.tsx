@@ -76,9 +76,6 @@ export default function ProductsPage() {
     const activeOrganizationId = organization.activeOrganization?.id;
 
     if (!activeOrganizationId) {
-      setProducts([]);
-      setError(null);
-      setIsLoading(false);
       return;
     }
 

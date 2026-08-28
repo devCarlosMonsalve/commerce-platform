@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 20 or later
+- Node.js 20.19 or later
 - Docker Desktop with Docker Compose
 
 ## 1. Configure PostgreSQL
@@ -38,7 +38,7 @@ The API and health check are available at:
 - `http://localhost:3001/api`
 - `http://localhost:3001/api/health`
 
-`CORS_ORIGIN` must allow the frontend origin, normally `http://localhost:3000`.
+`CORS_ORIGIN` must allow the frontend origin, normally `http://localhost:3000`. Cookie auth uses credentialed CORS, so do not use `*` for this value.
 
 If the database password contains URL-reserved characters, encode it in `DATABASE_URL`. For example, use `%23` for `#`.
 
@@ -54,6 +54,9 @@ npm run dev
 ```
 
 The frontend is available at `http://localhost:3000`. It expects the API at `http://localhost:3001/api`.
+Set `NEXT_PUBLIC_SITE_URL` to the public frontend URL. It defaults to `http://localhost:3000` for local development and is used to generate metadata links.
+
+Authentication is stored in an httpOnly cookie issued by the backend. Keep the frontend and backend origins aligned with `CORS_ORIGIN` so credentialed requests can include that cookie.
 
 ## Validation commands
 
@@ -62,9 +65,11 @@ The frontend is available at `http://localhost:3000`. It expects the API at `htt
 cd backend-mmp
 npx tsc --noEmit
 npm test
+npm run build
 
 # Frontend
 cd frontend-mmp
-npx tsc --noEmit
+npm run lint
+npm run test:e2e
 npm run build
 ```

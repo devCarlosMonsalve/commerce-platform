@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { AUTH_REPOSITORY } from '../../domain/auth.repository';
 import type { IAuthRepository } from '../../domain/auth.repository';
 import { LoginDto } from '../dtos/login.dto';
+import { UserEntity } from '../../domain/user.entity';
 
 @Injectable()
 export class LoginUseCase {
@@ -12,7 +13,7 @@ export class LoginUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
-  async execute(dto: LoginDto): Promise<{ accessToken: string }> {
+  async execute(dto: LoginDto): Promise<{ accessToken: string; user: UserEntity }> {
     const user = await this.authRepository.findByEmail(dto.email);
     if (!user || !user.passwordHash) {
       throw new UnauthorizedException('Invalid credentials');
@@ -24,6 +25,9 @@ export class LoginUseCase {
     }
 
     const payload = { sub: user.id, email: user.email };
-    return { accessToken: this.jwtService.sign(payload) };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      user,
+    };
   }
 }

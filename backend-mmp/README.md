@@ -22,16 +22,22 @@ The API runs at `http://localhost:3001/api`. The health check is `GET http://loc
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Secret used to sign JWTs |
 | `PORT` | API port; defaults to the local convention `3001` |
-| `CORS_ORIGIN` | Allowed frontend origin; normally `http://localhost:3000` |
+| `CORS_ORIGIN` | Allowed frontend origin(s); normally `http://localhost:3000` |
 
 The database URL password must be URL encoded. For example, write `%23` instead of `#`.
 
 ## API conventions
 
-Protected endpoints require:
+Protected endpoints accept either:
 
 ```http
-Authorization: Bearer <access-token>
+Cookie: access_token=...
+```
+
+or:
+
+```http
+Authorization: Bearer <jwt>
 ```
 
 Successful responses use:
@@ -55,6 +61,8 @@ Errors use:
 | Products | `/api/organizations/:orgId/products` |
 | Customers | `/api/organizations/:orgId/customers` |
 | Orders | `/api/organizations/:orgId/orders` |
+| Suppliers | `/api/organizations/:orgId/suppliers` |
+| Purchase orders | `/api/organizations/:orgId/purchase-orders` |
 
 The application is a modular monolith using pragmatic Clean Architecture: `domain/`, `application/`, and `infrastructure/` within each business module.
 

@@ -25,7 +25,7 @@ export class UpdateOrderStatusUseCase {
 
     try {
       const updatedOrder = this.applyStatusTransition(order, dto.status);
-      return this.orderRepository.updateStatus(orderId, updatedOrder.status);
+      return await this.orderRepository.updateStatus(updatedOrder, order.status);
     } catch (error) {
       if (error instanceof OrderDomainError) {
         throw new BadRequestException(error.message);

@@ -36,15 +36,28 @@ function resolveActiveOrganization(
 
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
+  const sessionKey = auth.isAuthenticated ? 'authenticated' : 'anonymous';
+
+  return (
+    <OrganizationStateProvider key={sessionKey} isAuthenticated={auth.isAuthenticated}>
+      {children}
+    </OrganizationStateProvider>
+  );
+}
+
+function OrganizationStateProvider({
+  children,
+  isAuthenticated,
+}: {
+  children: React.ReactNode;
+  isAuthenticated: boolean;
+}) {
   const [organizations, setOrganizations] = useState<OrganizationResponse[]>([]);
   const [activeOrganizationId, setActiveOrganizationIdState] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(isAuthenticated);
   const [error, setError] = useState<string | null>(null);
 
   const loadOrganizations = useCallback(async (preferredOrganizationId?: string | null) => {
-    setIsLoading(true);
-    setError(null);
-
     try {
       const data = await organizationsService.list();
       const storedOrganizationId =
@@ -54,6 +67,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
       setOrganizations(data);
       setActiveOrganizationIdState(nextActiveOrganization?.id ?? null);
+      setError(null);
 
       if (typeof window !== 'undefined') {
         if (nextActiveOrganization) {
@@ -72,20 +86,14 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   }, []);
 
   useEffect(() => {
-    if (auth.isLoading) {
+    if (!isAuthenticated) {
       return;
     }
 
-    if (!auth.isAuthenticated) {
-      setOrganizations([]);
-      setActiveOrganizationIdState(null);
-      setError(null);
-      setIsLoading(false);
-      return;
-    }
-
+    // The asynchronous request synchronizes tenant state after authentication changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadOrganizations();
-  }, [auth.isAuthenticated, auth.isLoading, loadOrganizations]);
+  }, [isAuthenticated, loadOrganizations]);
 
   const createOrganization = useCallback(
     async (data: CreateOrganizationRequest) => {

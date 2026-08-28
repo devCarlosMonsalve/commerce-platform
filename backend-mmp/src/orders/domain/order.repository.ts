@@ -19,6 +19,6 @@ export interface IOrderRepository {
       unitPrice: Decimal;
     }[];
   }): Promise<OrderEntity>;
-  updateStatus(id: string, status: OrderStatus): Promise<OrderEntity>;
+  updateStatus(order: OrderEntity, previousStatus: OrderStatus): Promise<OrderEntity>;
   delete(id: string): Promise<void>;
 }

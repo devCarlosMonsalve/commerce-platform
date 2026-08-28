@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { OrderItemEntity } from '../../domain/order-item.entity';
+import { OrderDomainError } from '../../domain/order-domain.error';
 import type { IOrderRepository } from '../../domain/order.repository';
 import { OrderEntity } from '../../domain/order.entity';
 import { UpdateOrderStatusUseCase } from './update-order-status.use-case';
@@ -57,8 +58,28 @@ describe('UpdateOrderStatusUseCase', () => {
       status: OrderStatus.PENDING,
     });
 
-    expect(orderRepository.updateStatus).toHaveBeenCalledWith('order-1', OrderStatus.PENDING);
+    expect(orderRepository.updateStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'order-1',
+        organizationId: 'org-1',
+        status: OrderStatus.PENDING,
+      }),
+      OrderStatus.DRAFT,
+    );
     expect(updatedOrder.status).toBe(OrderStatus.PENDING);
+  });
+
+  it('maps insufficient stock errors to a bad request', async () => {
+    orderRepository.findById.mockResolvedValue(buildOrder(OrderStatus.PENDING));
+    orderRepository.updateStatus.mockRejectedValue(
+      new OrderDomainError('Insufficient stock for product "Product 1"'),
+    );
+
+    await expect(
+      useCase.execute('org-1', 'order-1', {
+        status: OrderStatus.CONFIRMED,
+      }),
+    ).rejects.toThrow(BadRequestException);
   });
 
   it('rejects invalid lifecycle transitions', async () => {

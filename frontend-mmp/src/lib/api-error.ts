@@ -1,4 +1,10 @@
-export function getErrorMessage(error: unknown, fallback: string): string {
+type BackendMessageMapper = (message: string) => string | undefined;
+
+export function getErrorMessage(
+  error: unknown,
+  fallback: string,
+  mapBackendMessage?: BackendMessageMapper,
+): string {
   if (typeof error === 'object' && error !== null) {
     const response = Reflect.get(error, 'response');
 
@@ -9,11 +15,11 @@ export function getErrorMessage(error: unknown, fallback: string): string {
         const message = Reflect.get(data, 'message');
 
         if (Array.isArray(message)) {
-          return message.filter((item): item is string => typeof item === 'string').join(', ');
+          return fallback;
         }
 
         if (typeof message === 'string') {
-          return message;
+          return mapBackendMessage?.(message) ?? fallback;
         }
       }
     }
@@ -21,7 +27,7 @@ export function getErrorMessage(error: unknown, fallback: string): string {
     const message = Reflect.get(error, 'message');
 
     if (typeof message === 'string') {
-      return message;
+      return mapBackendMessage?.(message) ?? fallback;
     }
   }
 

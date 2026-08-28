@@ -23,6 +23,7 @@ export interface UserResponse {
 
 export interface AuthResponse {
   accessToken: string;
+  user: UserResponse;
 }
 
 // Organizations
@@ -80,6 +81,29 @@ export interface CustomerUpsertRequest {
   phone?: string;
 }
 
+// Suppliers
+export interface SupplierResponse {
+  id: string;
+  organizationId: string;
+  name: string;
+  contactName: string | null;
+  email: string | null;
+  phone: string | null;
+  taxId: string | null;
+  address: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplierUpsertRequest {
+  name: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
+  taxId?: string;
+  address?: string;
+}
+
 // Orders
 export type OrderStatus = 'DRAFT' | 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 
@@ -109,6 +133,78 @@ export interface CreateOrderRequest {
   customerId: string;
   items: Array<{
     productId: string;
+    quantity: number;
+  }>;
+}
+
+// Purchase orders
+export type PurchaseOrderStatus =
+  | 'DRAFT'
+  | 'ORDERED'
+  | 'PARTIALLY_RECEIVED'
+  | 'RECEIVED'
+  | 'CANCELLED';
+
+export interface PurchaseOrderItemResponse {
+  id: string;
+  productId: string;
+  productName: string;
+  productSku: string | null;
+  productDescription: string | null;
+  orderedQuantity: number;
+  receivedQuantity: number;
+  unitCost: string;
+  total: string;
+}
+
+export interface PurchaseReceiptItemResponse {
+  id: string;
+  purchaseOrderItemId: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+}
+
+export interface PurchaseReceiptResponse {
+  id: string;
+  organizationId: string;
+  purchaseOrderId: string;
+  reference: string | null;
+  notes: string | null;
+  receivedAt: string;
+  items: PurchaseReceiptItemResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PurchaseOrderResponse {
+  id: string;
+  organizationId: string;
+  supplierId: string;
+  status: PurchaseOrderStatus;
+  total: string;
+  orderedAt: string | null;
+  receivedAt: string | null;
+  items: PurchaseOrderItemResponse[];
+  receipts: PurchaseReceiptResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePurchaseOrderRequest {
+  supplierId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+    unitCost: number;
+  }>;
+}
+
+export interface ReceivePurchaseOrderRequest {
+  reference?: string;
+  notes?: string;
+  items: Array<{
+    purchaseOrderItemId: string;
     quantity: number;
   }>;
 }

@@ -27,8 +27,10 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import type { SvgIconComponent } from '@mui/icons-material';
 
 interface AppShellProps {
@@ -39,9 +41,9 @@ interface AppShellProps {
 }
 
 interface NavigationItem {
-  href: '/dashboard' | '/products' | '/customers' | '/orders';
+  href: '/dashboard' | '/products' | '/customers' | '/orders' | '/suppliers' | '/purchase-orders';
   icon: SvgIconComponent;
-  labelKey: 'dashboard' | 'products' | 'customers' | 'orders';
+  labelKey: 'dashboard' | 'products' | 'customers' | 'orders' | 'suppliers' | 'purchaseOrders';
 }
 
 const navigationItems: NavigationItem[] = [
@@ -49,6 +51,8 @@ const navigationItems: NavigationItem[] = [
   { href: '/products', icon: Inventory2OutlinedIcon, labelKey: 'products' },
   { href: '/customers', icon: GroupOutlinedIcon, labelKey: 'customers' },
   { href: '/orders', icon: ReceiptLongOutlinedIcon, labelKey: 'orders' },
+  { href: '/suppliers', icon: LocalShippingOutlinedIcon, labelKey: 'suppliers' },
+  { href: '/purchase-orders', icon: WarehouseOutlinedIcon, labelKey: 'purchaseOrders' },
 ];
 
 function isActivePath(currentPath: string, href: NavigationItem['href']): boolean {
@@ -76,43 +80,69 @@ export function AppShell({ title, description, children, action }: AppShellProps
     }
   }, [auth.isAuthenticated, auth.isLoading, router]);
 
+  useEffect(() => {
+    if (
+      auth.isAuthenticated &&
+      !organization.isLoading &&
+      !organization.activeOrganization &&
+      pathname !== '/dashboard'
+    ) {
+      router.replace('/dashboard');
+    }
+  }, [
+    auth.isAuthenticated,
+    organization.activeOrganization,
+    organization.isLoading,
+    pathname,
+    router,
+  ]);
+
   const sidebarLinks = useMemo(
     () =>
       navigationItems.map(({ href, icon: Icon, labelKey }) => {
         const active = isActivePath(pathname, href);
+        const isAvailable = href === '/dashboard' || Boolean(organization.activeOrganization);
+        const content = (
+          <Box
+            aria-disabled={!isAvailable}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              px: 1.5,
+              py: 1.2,
+              mb: 0.75,
+              borderRadius: 2.5,
+              color: active ? '#F5F0E8' : '#676356',
+              bgcolor: active ? '#5C6B40' : 'transparent',
+              fontSize: 14,
+              fontWeight: active ? 700 : 500,
+              opacity: isAvailable ? 1 : 0.45,
+              cursor: isAvailable ? 'pointer' : 'not-allowed',
+              transition: 'background-color 120ms ease, color 120ms ease',
+              '&:hover': isAvailable
+                ? { bgcolor: active ? '#5C6B40' : 'rgba(92,107,64,0.08)' }
+                : undefined,
+            }}
+          >
+            <Icon fontSize="small" />
+            {nav(labelKey)}
+          </Box>
+        );
 
-        return (
+        return isAvailable ? (
           <Link key={href} href={href} style={{ textDecoration: 'none' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                px: 1.5,
-                py: 1.2,
-                mb: 0.75,
-                borderRadius: 2.5,
-                color: active ? '#F5F0E8' : '#676356',
-                bgcolor: active ? '#5C6B40' : 'transparent',
-                fontSize: 14,
-                fontWeight: active ? 700 : 500,
-                transition: 'background-color 120ms ease, color 120ms ease',
-                '&:hover': {
-                  bgcolor: active ? '#5C6B40' : 'rgba(92,107,64,0.08)',
-                },
-              }}
-            >
-              <Icon fontSize="small" />
-              {nav(labelKey)}
-            </Box>
+            {content}
           </Link>
+        ) : (
+          <Box key={href}>{content}</Box>
         );
       }),
-    [nav, pathname],
+    [nav, organization.activeOrganization, pathname],
   );
 
-  const handleLogout = () => {
-    auth.logout();
+  const handleLogout = async () => {
+    await auth.logout();
     router.replace('/login');
   };
 
@@ -211,7 +241,9 @@ export function AppShell({ title, description, children, action }: AppShellProps
             <Button
               color="inherit"
               fullWidth
-              onClick={handleLogout}
+              onClick={() => {
+                void handleLogout();
+              }}
               sx={{ justifyContent: 'flex-start', px: 1.25 }}
             >
               {authMessages('logout')}
@@ -224,12 +256,13 @@ export function AppShell({ title, description, children, action }: AppShellProps
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', xl: 'row' },
+                flexDirection: { xs: 'column', lg: 'row' },
                 justifyContent: 'space-between',
+                alignItems: { lg: 'flex-start' },
                 gap: 2,
               }}
             >
-              <Box>
+              <Box sx={{ minWidth: 0, flex: '1 1 auto' }}>
                 <Typography variant="body2" sx={{ color: '#8B8577', fontWeight: 700 }}>
                   {organizationsMessages('switcherLabel')}
                 </Typography>
@@ -249,18 +282,28 @@ export function AppShell({ title, description, children, action }: AppShellProps
                 sx={{
                   display: 'flex',
                   flexDirection: { xs: 'column', sm: 'row' },
-                  flexWrap: 'wrap',
+                  flexWrap: { xs: 'wrap', lg: 'nowrap' },
+                  alignItems: 'center',
+                  flex: '0 0 auto',
                   gap: 1.5,
+                  '& .MuiButton-root, & .MuiInputBase-root': {
+                    height: 48,
+                  },
                 }}
               >
-                <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 260 } }}>
+                <FormControl
+                  size="small"
+                  sx={{
+                    minWidth: { xs: '100%', sm: 260 },
+                    '& .MuiInputBase-root': { bgcolor: '#FDFAF4' },
+                  }}
+                >
                   <Select
                     displayEmpty
                     value={organization.activeOrganizationId ?? ''}
                     onChange={(event) =>
                       organization.setActiveOrganizationId(event.target.value as string)
                     }
-                    sx={{ bgcolor: '#FDFAF4' }}
                   >
                     {organization.organizations.length === 0 ? (
                       <MenuItem disabled value="">
@@ -285,7 +328,12 @@ export function AppShell({ title, description, children, action }: AppShellProps
                 </Button>
                 {action}
                 <LanguageSwitcher />
-                <Button variant="contained" onClick={handleLogout}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    void handleLogout();
+                  }}
+                >
                   {authMessages('logout')}
                 </Button>
               </Box>
@@ -303,24 +351,33 @@ export function AppShell({ title, description, children, action }: AppShellProps
             >
               {navigationItems.map(({ href, labelKey }) => {
                 const active = isActivePath(pathname, href);
+                const isAvailable = href === '/dashboard' || Boolean(organization.activeOrganization);
+                const content = (
+                  <Box
+                    aria-disabled={!isAvailable}
+                    sx={{
+                      px: 2,
+                      py: 1.1,
+                      borderRadius: 999,
+                      whiteSpace: 'nowrap',
+                      fontWeight: 600,
+                      color: active ? '#F5F0E8' : '#5C6B40',
+                      bgcolor: active ? '#5C6B40' : '#FDFAF4',
+                      border: '1px solid rgba(92,107,64,0.13)',
+                      opacity: isAvailable ? 1 : 0.45,
+                      cursor: isAvailable ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    {nav(labelKey)}
+                  </Box>
+                );
 
-                return (
+                return isAvailable ? (
                   <Link key={href} href={href} style={{ textDecoration: 'none' }}>
-                    <Box
-                      sx={{
-                        px: 2,
-                        py: 1.1,
-                        borderRadius: 999,
-                        whiteSpace: 'nowrap',
-                        fontWeight: 600,
-                        color: active ? '#F5F0E8' : '#5C6B40',
-                        bgcolor: active ? '#5C6B40' : '#FDFAF4',
-                        border: '1px solid rgba(92,107,64,0.13)',
-                      }}
-                    >
-                      {nav(labelKey)}
-                    </Box>
+                    {content}
                   </Link>
+                ) : (
+                  <Box key={href}>{content}</Box>
                 );
               })}
             </Box>

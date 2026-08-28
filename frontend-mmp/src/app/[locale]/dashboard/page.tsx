@@ -10,7 +10,15 @@ import { formatAmount, formatDateTime } from '@/lib/format';
 import { customersService } from '@/services/customers.service';
 import { ordersService } from '@/services/orders.service';
 import { productsService } from '@/services/products.service';
-import type { CustomerResponse, OrderResponse, ProductResponse } from '@/types/api';
+import { purchaseOrdersService } from '@/services/purchase-orders.service';
+import { suppliersService } from '@/services/suppliers.service';
+import type {
+  CustomerResponse,
+  OrderResponse,
+  ProductResponse,
+  PurchaseOrderResponse,
+  SupplierResponse,
+} from '@/types/api';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -20,7 +28,9 @@ import Typography from '@mui/material/Typography';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
+import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 
 const dashboardSections = [
   {
@@ -41,10 +51,22 @@ const dashboardSections = [
     translationKey: 'orders',
     summaryKey: 'ordersDescription',
   },
+  {
+    href: '/suppliers',
+    icon: LocalShippingOutlinedIcon,
+    translationKey: 'suppliers',
+    summaryKey: 'suppliersDescription',
+  },
+  {
+    href: '/purchase-orders',
+    icon: WarehouseOutlinedIcon,
+    translationKey: 'purchaseOrders',
+    summaryKey: 'purchaseOrdersDescription',
+  },
 ] as const;
 
-function sortOrders(orders: OrderResponse[]): OrderResponse[] {
-  return [...orders].sort((left, right) => {
+function sortByUpdatedAt<T extends { updatedAt: string }>(items: T[]): T[] {
+  return [...items].sort((left, right) => {
     return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
   });
 }
@@ -58,6 +80,8 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
   const [orders, setOrders] = useState<OrderResponse[]>([]);
+  const [suppliers, setSuppliers] = useState<SupplierResponse[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrderResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,11 +89,6 @@ export default function DashboardPage() {
     const activeOrganizationId = organization.activeOrganization?.id;
 
     if (!activeOrganizationId) {
-      setProducts([]);
-      setCustomers([]);
-      setOrders([]);
-      setError(null);
-      setIsLoading(false);
       return;
     }
 
@@ -78,15 +97,20 @@ export default function DashboardPage() {
       setError(null);
 
       try {
-        const [productsData, customersData, ordersData] = await Promise.all([
+        const [productsData, customersData, ordersData, suppliersData, purchaseOrdersData] =
+          await Promise.all([
           productsService.list(activeOrganizationId),
           customersService.list(activeOrganizationId),
           ordersService.list(activeOrganizationId),
+          suppliersService.list(activeOrganizationId),
+          purchaseOrdersService.list(activeOrganizationId),
         ]);
 
         setProducts(productsData);
         setCustomers(customersData);
-        setOrders(sortOrders(ordersData));
+        setOrders(sortByUpdatedAt(ordersData));
+        setSuppliers(suppliersData);
+        setPurchaseOrders(sortByUpdatedAt(purchaseOrdersData));
       } catch (loadError) {
         setError(getErrorMessage(loadError, t('loadError')));
       } finally {
@@ -159,6 +183,8 @@ export default function DashboardPage() {
               <Chip label={`${nav('products')}: ${products.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
               <Chip label={`${nav('customers')}: ${customers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
               <Chip label={`${nav('orders')}: ${orders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
+              <Chip label={`${nav('suppliers')}: ${suppliers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
+              <Chip label={`${nav('purchaseOrders')}: ${purchaseOrders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
             </Box>
           </Paper>
 
@@ -184,6 +210,12 @@ export default function DashboardPage() {
                 value: formatAmount(completedRevenue, locale),
                 helper: t('completedRevenueHint'),
               },
+              { label: nav('suppliers'), value: suppliers.length, helper: t('suppliersKpi') },
+              {
+                label: nav('purchaseOrders'),
+                value: purchaseOrders.length,
+                helper: t('purchaseOrdersKpi'),
+              },
             ].map(({ label, value, helper }) => (
               <Paper key={label} elevation={0} sx={{ p: 3, borderRadius: 3 }}>
                 <Typography variant="body2" sx={{ color: '#8B8577', fontWeight: 700 }}>
@@ -202,7 +234,7 @@ export default function DashboardPage() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', lg: 'repeat(3, 1fr)' },
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' },
               gap: 2,
             }}
           >

@@ -1,58 +1,73 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { registerUnauthorizedHandler } from '@/lib/axios';
 import { authService } from '@/services/auth.service';
 import type { UserResponse } from '@/types/api';
 
 interface AuthState {
   user: UserResponse | null;
-  token: string | null;
   isLoading: boolean;
 }
 
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({ user: null, token: null, isLoading: true });
+  const [state, setState] = useState<AuthState>({ user: null, isLoading: true });
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const user = localStorage.getItem('user');
-    if (token) {
-      setState({
-        token,
-        user: user ? (JSON.parse(user) as UserResponse) : null,
-        isLoading: false,
-      });
-    } else {
-      setState((s) => ({ ...s, isLoading: false }));
-    }
+    let isMounted = true;
+    const unregister = registerUnauthorizedHandler(() => {
+      if (isMounted) {
+        setState({ user: null, isLoading: false });
+      }
+    });
+
+    const loadSession = async () => {
+      try {
+        const user = await authService.me();
+
+        if (isMounted) {
+          setState({ user, isLoading: false });
+        }
+      } catch {
+        if (isMounted) {
+          setState({ user: null, isLoading: false });
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      isMounted = false;
+      unregister();
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { accessToken } = await authService.login({ email, password });
-    localStorage.setItem('access_token', accessToken);
-    setState((s) => ({ ...s, token: accessToken }));
+    const { user } = await authService.login({ email, password });
+    setState({ user, isLoading: false });
   }, []);
 
   const register = useCallback(async (email: string, password: string, name?: string) => {
-    const user = await authService.register({ email, password, name });
-    await login(email, password);
-    localStorage.setItem('user', JSON.stringify(user));
-    setState((s) => ({ ...s, user }));
-  }, [login]);
+    const { user } = await authService.register({ email, password, name });
+    setState({ user, isLoading: false });
+  }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    setState({ user: null, token: null, isLoading: false });
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setState({ user: null, isLoading: false });
+    }
   }, []);
 
   return (
@@ -62,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
-        isAuthenticated: !!state.token,
+        isAuthenticated: !!state.user,
       }}
     >
       {children}

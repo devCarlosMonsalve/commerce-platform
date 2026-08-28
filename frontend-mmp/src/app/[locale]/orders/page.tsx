@@ -93,6 +93,19 @@ function buildOrderPayload(customerId: string, items: OrderFormItem[]): CreateOr
   };
 }
 
+function getLocalizedOrderError(
+  error: unknown,
+  fallback: string,
+  translate: ReturnType<typeof useTranslations<'orders'>>,
+): string {
+  return getErrorMessage(error, fallback, (message) => {
+    const insufficientStock = /^Insufficient stock for product "(.+)"$/.exec(message);
+    return insufficientStock
+      ? translate('insufficientStock', { product: insufficientStock[1] })
+      : undefined;
+  });
+}
+
 export default function OrdersPage() {
   const t = useTranslations('orders');
   const common = useTranslations('common');
@@ -113,11 +126,6 @@ export default function OrdersPage() {
     const activeOrganizationId = organization.activeOrganization?.id;
 
     if (!activeOrganizationId) {
-      setOrders([]);
-      setCustomers([]);
-      setProducts([]);
-      setError(null);
-      setIsLoading(false);
       return;
     }
 
@@ -209,7 +217,7 @@ export default function OrdersPage() {
       setCustomerId('');
       setItems(initialOrderItems);
     } catch (submitError) {
-      setError(getErrorMessage(submitError, t('createError')));
+      setError(getLocalizedOrderError(submitError, t('createError'), t));
     } finally {
       setIsSubmitting(false);
     }
@@ -236,7 +244,7 @@ export default function OrdersPage() {
         ),
       );
     } catch (submitError) {
-      setError(getErrorMessage(submitError, t('updateError')));
+      setError(getLocalizedOrderError(submitError, t('updateError'), t));
     } finally {
       setUpdatingOrderId(null);
     }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { GetCurrentUserUseCase } from './application/use-cases/get-current-user.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { AUTH_REPOSITORY } from './domain/auth.repository';
@@ -25,6 +26,7 @@ import { PrismaAuthRepository } from './infrastructure/persistence/prisma-auth.r
   providers: [
     RegisterUseCase,
     LoginUseCase,
+    GetCurrentUserUseCase,
     JwtStrategy,
     { provide: AUTH_REPOSITORY, useClass: PrismaAuthRepository },
   ],

@@ -26,16 +26,27 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PurchaseOrderStatus {
+  DRAFT
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  slug        String       @unique
-  memberships Membership[]
-  products    Product[]
-  customers   Customer[]
-  orders      Order[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id               String            @id @default(cuid())
+  name             String
+  slug             String            @unique
+  memberships      Membership[]
+  products         Product[]
+  customers        Customer[]
+  orders           Order[]
+  suppliers        Supplier[]
+  purchaseOrders   PurchaseOrder[]
+  purchaseReceipts PurchaseReceipt[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model User {
@@ -54,11 +65,11 @@ model Membership {
   organizationId String
   role           MembershipRole @default(MEMBER)
 
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, organizationId])
   @@index([organizationId])
@@ -74,46 +85,47 @@ model Product {
   stock          Int           @default(0)
   status         ProductStatus @default(ACTIVE)
 
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  orderItems     OrderItem[]
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orderItems         OrderItem[]
+  purchaseOrderItems PurchaseOrderItem[]
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([organizationId, sku])
   @@index([organizationId])
 }
 
 model Customer {
-  id             String        @id @default(cuid())
+  id             String  @id @default(cuid())
   organizationId String
   name           String
   email          String?
   phone          String?
 
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  orders         Order[]
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders       Order[]
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@index([email])
 }
 
 model Order {
-  id             String        @id @default(cuid())
+  id             String      @id @default(cuid())
   organizationId String
   customerId     String
-  status         OrderStatus   @default(DRAFT)
-  total          Decimal       @default(0) @db.Decimal(10, 2)
+  status         OrderStatus @default(DRAFT)
+  total          Decimal     @default(0) @db.Decimal(10, 2)
 
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  customer       Customer      @relation(fields: [customerId], references: [id])
-  items          OrderItem[]
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer     Customer     @relation(fields: [customerId], references: [id])
+  items        OrderItem[]
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@index([customerId])
@@ -121,22 +133,124 @@ model Order {
 }
 
 model OrderItem {
-  id                 String   @id @default(cuid())
+  id                 String  @id @default(cuid())
   orderId            String
   productId          String
   productName        String
   productSku         String?
   productDescription String?
   quantity           Int
-  unitPrice          Decimal  @db.Decimal(10, 2)
-  total              Decimal  @db.Decimal(10, 2)
+  unitPrice          Decimal @db.Decimal(10, 2)
+  total              Decimal @db.Decimal(10, 2)
 
-  order              Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product            Product  @relation(fields: [productId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orderId])
   @@index([productId])
+}
+
+model Supplier {
+  id             String  @id @default(cuid())
+  organizationId String
+  name           String
+  contactName    String?
+  email          String?
+  phone          String?
+  taxId          String?
+  address        String?
+
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  purchaseOrders PurchaseOrder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+model PurchaseOrder {
+  id             String              @id @default(cuid())
+  organizationId String
+  supplierId     String
+  status         PurchaseOrderStatus @default(DRAFT)
+  total          Decimal             @default(0) @db.Decimal(10, 2)
+  orderedAt      DateTime?
+  receivedAt     DateTime?
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  supplier     Supplier            @relation(fields: [supplierId], references: [id])
+  items        PurchaseOrderItem[]
+  receipts     PurchaseReceipt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model PurchaseOrderItem {
+  id                 String  @id @default(cuid())
+  purchaseOrderId    String
+  productId          String
+  productName        String
+  productSku         String?
+  productDescription String?
+  orderedQuantity    Int
+  receivedQuantity   Int     @default(0)
+  unitCost           Decimal @db.Decimal(10, 2)
+  total              Decimal @db.Decimal(10, 2)
+
+  purchaseOrder PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product       Product               @relation(fields: [productId], references: [id])
+  receiptItems  PurchaseReceiptItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+}
+
+model PurchaseReceipt {
+  id              String   @id @default(cuid())
+  organizationId  String
+  purchaseOrderId String
+  reference       String?
+  notes           String?
+  receivedAt      DateTime @default(now())
+
+  organization  Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  purchaseOrder PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  items         PurchaseReceiptItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([purchaseOrderId])
+}
+
+model PurchaseReceiptItem {
+  id                  String @id @default(cuid())
+  purchaseReceiptId   String
+  purchaseOrderItemId String
+  productId           String
+  productName         String
+  quantity            Int
+
+  purchaseReceipt   PurchaseReceipt   @relation(fields: [purchaseReceiptId], references: [id], onDelete: Cascade)
+  purchaseOrderItem PurchaseOrderItem @relation(fields: [purchaseOrderItemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([purchaseReceiptId])
+  @@index([purchaseOrderItemId])
 }

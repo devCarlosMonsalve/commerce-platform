@@ -68,9 +68,6 @@ export default function CustomersPage() {
     const activeOrganizationId = organization.activeOrganization?.id;
 
     if (!activeOrganizationId) {
-      setCustomers([]);
-      setError(null);
-      setIsLoading(false);
       return;
     }
 

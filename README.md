@@ -4,7 +4,7 @@
 
 **A multi-tenant SaaS platform for centralized commerce operations.**
 
-Manage organizations, products, customers, and orders from one place.
+Manage organizations, products, customers, sales orders, suppliers, and purchase orders from one place.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?style=flat-square&logo=nestjs&logoColor=white)](https://nestjs.com/)
@@ -25,11 +25,12 @@ It is designed as a modular, multi-tenant SaaS application. Each organization ow
 
 | Area | Status |
 |---|---|
-| Backend API | Authentication, organizations, memberships, products, customers, and orders |
-| Authorization | JWT, organization membership validation, and role-based access control |
-| Frontend | Internationalized landing, authentication, active organization selection, dashboard, products, customers, and orders |
+| Backend API | Authentication, organizations, memberships, products, customers, sales orders, suppliers, and purchase orders |
+| Authorization | httpOnly JWT cookie, organization membership validation, and role-based access control |
+| Frontend | Internationalized landing, authentication, active organization selection, dashboard, products, customers, sales orders, suppliers, and purchase orders |
 | Order lifecycle | Customer validation, historical product snapshots, and `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED` transitions |
-| Quality | Core order-domain tests; OpenAPI/Swagger documentation remains pending |
+| Purchasing | Partial or complete purchase receipts increase product stock |
+| Quality | Backend unit tests and frontend Playwright public-route tests; OpenAPI/Swagger documentation remains pending |
 
 ## Technology
 
@@ -38,7 +39,7 @@ It is designed as a modular, multi-tenant SaaS application. Each organization ow
 | Backend | NestJS 11, TypeScript, Prisma 6 |
 | Database | PostgreSQL 16 in Docker Compose |
 | Frontend | Next.js 16, Material UI, Tailwind CSS, next-intl |
-| Authentication | JWT |
+| Authentication | JWT in an httpOnly cookie |
 
 ## Quick start
 
@@ -82,6 +83,8 @@ All protected endpoints require `Authorization: Bearer <token>`.
 | Products | `/api/organizations/:orgId/products` |
 | Customers | `/api/organizations/:orgId/customers` |
 | Orders | `/api/organizations/:orgId/orders` |
+| Suppliers | `/api/organizations/:orgId/suppliers` |
+| Purchase orders | `/api/organizations/:orgId/purchase-orders` |
 
 Successful API responses follow `{ success: true, data, message? }`. Errors follow a consistent `{ success: false, statusCode, message, path, timestamp }` format.
 

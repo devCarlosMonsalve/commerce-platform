@@ -9,7 +9,7 @@ Next.js application for Commerce Platform.
 | Framework | Next.js 16, App Router, Turbopack |
 | UI | Material UI 9 and Tailwind CSS 4 |
 | Internationalization | next-intl: Spanish, English, and French |
-| Authentication | JWT stored locally and sent with Axios |
+| Authentication | Backend-issued httpOnly JWT cookie with credentialed Axios requests |
 | Language | TypeScript |
 
 ## Setup
@@ -29,6 +29,7 @@ The application runs at `http://localhost:3000`.
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_API_URL` | API base URL, normally `http://localhost:3001/api` |
+| `NEXT_PUBLIC_SITE_URL` | Public application URL used for metadata, normally `http://localhost:3000` |
 
 ## Current screens
 
@@ -39,6 +40,8 @@ The application runs at `http://localhost:3000`.
 - Product management: list, create, edit, deactivate
 - Customer management: list, create, edit
 - Order management: list, create, snapshot review, lifecycle actions
+- Supplier management: list, create, and edit
+- Purchase orders: list, create, and receive items partially or completely
 
 ## Structure
 
@@ -61,6 +64,7 @@ npm run dev    # Development server
 npm run build  # Production build
 npm run start  # Production server
 npm run lint   # ESLint
+npm run test:e2e # Playwright public-route tests
 ```
 
 For complete local setup, see [development documentation](../docs/development.md).
