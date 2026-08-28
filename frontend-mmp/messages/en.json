@@ -101,7 +101,8 @@
     "ordersKpi": "All orders scoped to the active organization.",
     "completedRevenue": "Completed revenue",
     "completedRevenueHint": "Sum of completed order totals.",
-    "manageSection": "Open section"
+    "manageSection": "Open section",
+    "comingSoon": "Coming soon"
   },
   "organizations": {
     "title": "Organizations",

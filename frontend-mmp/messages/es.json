@@ -101,7 +101,8 @@
     "ordersKpi": "Todos los pedidos de la organización activa.",
     "completedRevenue": "Ingresos completados",
     "completedRevenueHint": "Suma de los totales de pedidos completados.",
-    "manageSection": "Abrir sección"
+    "manageSection": "Abrir sección",
+    "comingSoon": "Próximamente"
   },
   "organizations": {
     "title": "Organizaciones",
