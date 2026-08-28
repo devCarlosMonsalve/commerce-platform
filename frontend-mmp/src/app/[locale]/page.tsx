@@ -2,13 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { LanguageSwitcher } from '@/components/language-switcher';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 
 export default function HomePage() {
   const t = useTranslations('home');
@@ -16,97 +17,114 @@ export default function HomePage() {
 
   return (
     <Box
-      className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
-      sx={{ bgcolor: 'background.default' }}
+      sx={{
+        minHeight: '100vh',
+        bgcolor: '#F5F0E8',
+        color: '#2C2C20',
+        display: 'flex',
+        flexDirection: 'column',
+        p: { xs: 2, md: 3 },
+      }}
     >
-      <Box className="absolute top-4 right-6 z-20">
-        <LanguageSwitcher />
-      </Box>
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[120px]"
-          style={{ background: 'rgba(168,192,144,0.25)' }}
-        />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[100px]"
-          style={{ background: 'rgba(196,154,108,0.15)' }}
-        />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center text-center max-w-3xl gap-6">
-        <Chip
-          icon={<AutoAwesomeIcon sx={{ fontSize: 14 }} />}
-          label={t('badge')}
-          variant="outlined"
-          size="small"
-          sx={{ borderColor: 'rgba(92,107,64,0.4)', color: '#5C6B40', fontSize: '0.75rem', bgcolor: 'rgba(92,107,64,0.06)' }}
-        />
-
-        <Typography
-          variant="h1"
-          sx={{
-            fontSize: { xs: '2.5rem', md: '4rem' },
-            fontWeight: 800,
-            lineHeight: 1.1,
-            letterSpacing: '-0.03em',
-            color: '#2C2C20',
-          }}
-        >
-          {t('title')}{' '}
+      <Box
+        component="header"
+        sx={{
+          width: '100%',
+          maxWidth: 1180,
+          mx: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
           <Box
-            component="span"
             sx={{
-              background: 'linear-gradient(135deg, #5C6B40 0%, #C49A6C 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              width: 38,
+              height: 38,
+              display: 'grid',
+              placeItems: 'center',
+              borderRadius: 2.5,
+              color: '#F5F0E8',
+              bgcolor: '#5C6B40',
             }}
           >
-            {t('titleAccent')}
+            <StorefrontOutlinedIcon fontSize="small" />
           </Box>
-        </Typography>
+          <Typography sx={{ fontWeight: 750, letterSpacing: '-0.03em' }}>Commerce</Typography>
+        </Box>
 
-        <Typography
-          variant="h6"
-          sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 500, lineHeight: 1.6 }}
-        >
-          {t('description')}
-        </Typography>
-
-        <Box className="flex gap-3 mt-2">
-          <Link href="/register" style={{ textDecoration: 'none' }}>
-            <Button variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ px: 4 }}>
-              {common('getStarted')}
-            </Button>
-          </Link>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LanguageSwitcher />
           <Link href="/login" style={{ textDecoration: 'none' }}>
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{ px: 4, color: 'text.secondary', borderColor: 'rgba(92,107,64,0.25)' }}
-            >
-              {common('learnMore')}
+            <Button color="inherit" sx={{ fontWeight: 650 }}>
+              {t('signIn')}
             </Button>
           </Link>
         </Box>
+      </Box>
 
-        <Box className="grid grid-cols-3 gap-8 mt-12 w-full max-w-md">
-          {[
-            { label: t('statOrgsLabel'), value: t('statOrgs'), color: '#5C6B40' },
-            { label: t('statOrdersLabel'), value: t('statOrders'), color: '#C49A6C' },
-            { label: t('statAccessLabel'), value: t('statAccess'), color: '#8B5A35' },
-          ].map((stat) => (
-            <Box key={stat.label} className="flex flex-col items-center gap-1">
-              <Typography variant="h6" sx={{ color: stat.color, fontWeight: 700 }}>
-                {stat.value}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                {stat.label}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </div>
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          py: { xs: 8, md: 12 },
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            width: '100%',
+            maxWidth: 840,
+            p: { xs: 3.5, sm: 6, md: 8 },
+            textAlign: 'center',
+            borderRadius: { xs: 4, md: 6 },
+            bgcolor: '#FDFAF4',
+            border: '1px solid rgba(92,107,64,0.16)',
+            boxShadow: '0 24px 70px rgba(74, 70, 49, 0.10)',
+          }}
+        >
+          <Chip
+            label={t('badge')}
+            size="small"
+            sx={{ bgcolor: 'rgba(168,192,144,0.25)', color: '#4B5A35', fontWeight: 700 }}
+          />
+          <Typography
+            component="h1"
+            sx={{
+              mt: 3,
+              fontSize: { xs: '2.4rem', sm: '3.6rem', md: '4.25rem' },
+              lineHeight: 1.05,
+              fontWeight: 800,
+              letterSpacing: '-0.06em',
+            }}
+          >
+            {t('title')} <Box component="span" sx={{ color: '#5C6B40' }}>{t('titleAccent')}</Box>
+          </Typography>
+          <Typography
+            sx={{
+              maxWidth: 590,
+              mx: 'auto',
+              mt: 3,
+              color: '#676356',
+              fontSize: { xs: '1rem', md: '1.125rem' },
+              lineHeight: 1.65,
+            }}
+          >
+            {t('description')}
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Link href="/register" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ px: 3, py: 1.3 }}>
+                {common('getStarted')}
+              </Button>
+            </Link>
+          </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 }

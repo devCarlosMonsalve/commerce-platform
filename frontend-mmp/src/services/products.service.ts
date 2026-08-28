@@ -1,5 +1,10 @@
 import apiClient from '@/lib/axios';
-import type { ApiResponse, ProductResponse, ProductStatus } from '@/types/api';
+import type {
+  ApiResponse,
+  ProductResponse,
+  ProductStatus,
+  ProductUpsertRequest,
+} from '@/types/api';
 
 export const productsService = {
   async list(orgId: string): Promise<ProductResponse[]> {
@@ -12,13 +17,25 @@ export const productsService = {
     return res.data.data;
   },
 
-  async create(orgId: string, data: { name: string; price: number; description?: string; sku?: string; stock?: number }): Promise<ProductResponse> {
+  async create(orgId: string, data: ProductUpsertRequest): Promise<ProductResponse> {
     const res = await apiClient.post<ApiResponse<ProductResponse>>(`/organizations/${orgId}/products`, data);
     return res.data.data;
   },
 
-  async update(orgId: string, productId: string, data: { name?: string; price?: number; description?: string; sku?: string; stock?: number; status?: ProductStatus }): Promise<ProductResponse> {
+  async update(
+    orgId: string,
+    productId: string,
+    data: Partial<ProductUpsertRequest> & { status?: ProductStatus },
+  ): Promise<ProductResponse> {
     const res = await apiClient.patch<ApiResponse<ProductResponse>>(`/organizations/${orgId}/products/${productId}`, data);
+    return res.data.data;
+  },
+
+  async deactivate(orgId: string, productId: string): Promise<ProductResponse> {
+    const res = await apiClient.patch<ApiResponse<ProductResponse>>(
+      `/organizations/${orgId}/products/${productId}`,
+      { status: 'INACTIVE' satisfies ProductStatus },
+    );
     return res.data.data;
   },
 

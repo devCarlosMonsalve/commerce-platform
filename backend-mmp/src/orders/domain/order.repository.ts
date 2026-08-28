@@ -9,8 +9,15 @@ export interface IOrderRepository {
   findAllByOrganization(organizationId: string): Promise<OrderEntity[]>;
   create(data: {
     organizationId: string;
-    customerId?: string;
-    items: { productId: string; quantity: number; unitPrice: Decimal }[];
+    customerId: string;
+    items: {
+      productId: string;
+      productName: string;
+      productSku?: string | null;
+      productDescription?: string | null;
+      quantity: number;
+      unitPrice: Decimal;
+    }[];
   }): Promise<OrderEntity>;
   updateStatus(id: string, status: OrderStatus): Promise<OrderEntity>;
   delete(id: string): Promise<void>;

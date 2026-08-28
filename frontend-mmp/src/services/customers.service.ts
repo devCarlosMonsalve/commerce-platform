@@ -1,5 +1,5 @@
 import apiClient from '@/lib/axios';
-import type { ApiResponse, CustomerResponse } from '@/types/api';
+import type { ApiResponse, CustomerResponse, CustomerUpsertRequest } from '@/types/api';
 
 export const customersService = {
   async list(orgId: string): Promise<CustomerResponse[]> {
@@ -12,12 +12,16 @@ export const customersService = {
     return res.data.data;
   },
 
-  async create(orgId: string, data: { name: string; email?: string; phone?: string }): Promise<CustomerResponse> {
+  async create(orgId: string, data: CustomerUpsertRequest): Promise<CustomerResponse> {
     const res = await apiClient.post<ApiResponse<CustomerResponse>>(`/organizations/${orgId}/customers`, data);
     return res.data.data;
   },
 
-  async update(orgId: string, customerId: string, data: { name?: string; email?: string; phone?: string }): Promise<CustomerResponse> {
+  async update(
+    orgId: string,
+    customerId: string,
+    data: Partial<CustomerUpsertRequest>,
+  ): Promise<CustomerResponse> {
     const res = await apiClient.patch<ApiResponse<CustomerResponse>>(`/organizations/${orgId}/customers/${customerId}`, data);
     return res.data.data;
   },

@@ -1,5 +1,5 @@
 import apiClient from '@/lib/axios';
-import type { ApiResponse, OrderResponse, OrderStatus } from '@/types/api';
+import type { ApiResponse, CreateOrderRequest, OrderResponse, OrderStatus } from '@/types/api';
 
 export const ordersService = {
   async list(orgId: string): Promise<OrderResponse[]> {
@@ -12,7 +12,7 @@ export const ordersService = {
     return res.data.data;
   },
 
-  async create(orgId: string, data: { customerId?: string; items: { productId: string; quantity: number }[] }): Promise<OrderResponse> {
+  async create(orgId: string, data: CreateOrderRequest): Promise<OrderResponse> {
     const res = await apiClient.post<ApiResponse<OrderResponse>>(`/organizations/${orgId}/orders`, data);
     return res.data.data;
   },

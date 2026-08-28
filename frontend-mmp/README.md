@@ -1,64 +1,66 @@
-# frontend-mmp
+# Commerce Platform Frontend
 
-Frontend for **Commerce Platform** � built with Next.js, Material UI, and Tailwind CSS.
-
-[![Next.js](https://img.shields.io/badge/Next.js-16.x-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![MUI](https://img.shields.io/badge/MUI-6.x-007FFF?style=flat-square&logo=mui&logoColor=white)](https://mui.com/)
-[![Tailwind](https://img.shields.io/badge/Tailwind-4.x-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-
----
+Next.js application for Commerce Platform.
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16 + App Router + Turbopack |
-| UI Components | Material UI v6 (dark theme) |
-| Utilities | Tailwind CSS v4 |
-| Font | Geist (Vercel) |
+| Framework | Next.js 16, App Router, Turbopack |
+| UI | Material UI 9 and Tailwind CSS 4 |
+| Internationalization | next-intl: Spanish, English, and French |
+| Authentication | JWT stored locally and sent with Axios |
 | Language | TypeScript |
 
----
+## Setup
 
-## Getting Started
-
-### Prerequisites
-- Node.js v20+
-- Backend running at `http://localhost:3000`
-
-### Setup
+The backend must run at `http://localhost:3001`.
 
 ```bash
-# Install dependencies
+cp .env.example .env.local
 npm install
-
-# Start development server
 npm run dev
 ```
 
-App available at: `http://localhost:3001`
+The application runs at `http://localhost:3000`.
 
----
+## Environment
 
-## Project Structure
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | API base URL, normally `http://localhost:3001/api` |
 
-```
+## Current screens
+
+- Localized landing page
+- Login and registration
+- Authenticated dashboard
+- Active organization selection and persistence
+- Product management: list, create, edit, deactivate
+- Customer management: list, create, edit
+- Order management: list, create, snapshot review, lifecycle actions
+
+## Structure
+
+```text
 src/
-+-- app/               # Next.js App Router pages
-+-- components/        # Shared UI components
-�   +-- providers.tsx  # MUI ThemeProvider
-+-- lib/
-    +-- theme.ts       # MUI dark theme configuration
+├── app/[locale]/    # Localized pages
+├── components/      # Shared UI components
+├── context/         # Authentication and organization state
+├── i18n/            # Locale routing configuration
+├── lib/             # Axios and Material UI theme
+├── services/        # API service clients
+└── proxy.ts         # Next.js locale proxy
+messages/            # ES, EN, and FR translations
 ```
-
----
 
 ## Scripts
 
 ```bash
-npm run dev       # Development server (Turbopack)
-npm run build     # Production build
-npm run start     # Production server
-npm run lint      # ESLint
+npm run dev    # Development server
+npm run build  # Production build
+npm run start  # Production server
+npm run lint   # ESLint
 ```
+
+For complete local setup, see [development documentation](../docs/development.md).

@@ -25,8 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     const user = localStorage.getItem('user');
-    if (token && user) {
-      setState({ token, user: JSON.parse(user), isLoading: false });
+    if (token) {
+      setState({
+        token,
+        user: user ? (JSON.parse(user) as UserResponse) : null,
+        isLoading: false,
+      });
     } else {
       setState((s) => ({ ...s, isLoading: false }));
     }
@@ -49,7 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
     setState({ user: null, token: null, isLoading: false });
-    window.location.href = '/login';
   }, []);
 
   return (

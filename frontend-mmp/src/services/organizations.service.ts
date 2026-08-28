@@ -1,5 +1,5 @@
 import apiClient from '@/lib/axios';
-import type { ApiResponse, OrganizationResponse } from '@/types/api';
+import type { ApiResponse, CreateOrganizationRequest, OrganizationResponse } from '@/types/api';
 
 export const organizationsService = {
   async list(): Promise<OrganizationResponse[]> {
@@ -12,7 +12,7 @@ export const organizationsService = {
     return res.data.data;
   },
 
-  async create(data: { name: string; slug: string }): Promise<OrganizationResponse> {
+  async create(data: CreateOrganizationRequest): Promise<OrganizationResponse> {
     const res = await apiClient.post<ApiResponse<OrganizationResponse>>('/organizations', data);
     return res.data.data;
   },

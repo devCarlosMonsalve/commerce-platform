@@ -31,8 +31,15 @@ export class PrismaOrderRepository implements IOrderRepository {
 
   async create(data: {
     organizationId: string;
-    customerId?: string;
-    items: { productId: string; quantity: number; unitPrice: Decimal }[];
+    customerId: string;
+    items: {
+      productId: string;
+      productName: string;
+      productSku?: string | null;
+      productDescription?: string | null;
+      quantity: number;
+      unitPrice: Decimal;
+    }[];
   }): Promise<OrderEntity> {
     const total = data.items.reduce(
       (sum, item) => sum.plus(item.unitPrice.mul(item.quantity)),
@@ -48,6 +55,9 @@ export class PrismaOrderRepository implements IOrderRepository {
           items: {
             create: data.items.map((item) => ({
               productId: item.productId,
+              productName: item.productName,
+              productSku: item.productSku,
+              productDescription: item.productDescription,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               total: item.unitPrice.mul(item.quantity),
@@ -78,13 +88,16 @@ export class PrismaOrderRepository implements IOrderRepository {
   private toEntity(order: {
     id: string;
     organizationId: string;
-    customerId: string | null;
+    customerId: string;
     status: OrderStatus;
     total: Decimal;
     items: {
       id: string;
       orderId: string;
       productId: string;
+      productName: string;
+      productSku: string | null;
+      productDescription: string | null;
       quantity: number;
       unitPrice: Decimal;
       total: Decimal;
@@ -110,6 +123,9 @@ export class PrismaOrderRepository implements IOrderRepository {
     id: string;
     orderId: string;
     productId: string;
+    productName: string;
+    productSku: string | null;
+    productDescription: string | null;
     quantity: number;
     unitPrice: Decimal;
     total: Decimal;
@@ -120,6 +136,9 @@ export class PrismaOrderRepository implements IOrderRepository {
       item.id,
       item.orderId,
       item.productId,
+      item.productName,
+      item.productSku,
+      item.productDescription,
       item.quantity,
       item.unitPrice,
       item.total,

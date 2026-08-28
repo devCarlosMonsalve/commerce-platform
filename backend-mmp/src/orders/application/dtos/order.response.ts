@@ -4,6 +4,9 @@ import { OrderEntity } from '../../domain/order.entity';
 export class OrderItemResponse {
   id: string;
   productId: string;
+  productName: string;
+  productSku: string | null;
+  productDescription: string | null;
   quantity: number;
   unitPrice: string;
   total: string;
@@ -12,7 +15,7 @@ export class OrderItemResponse {
 export class OrderResponse {
   id: string;
   organizationId: string;
-  customerId: string | null;
+  customerId: string;
   status: OrderStatus;
   total: string;
   items: OrderItemResponse[];
@@ -29,6 +32,9 @@ export class OrderResponse {
     dto.items = entity.items.map((item) => ({
       id: item.id,
       productId: item.productId,
+      productName: item.productName,
+      productSku: item.productSku,
+      productDescription: item.productDescription,
       quantity: item.quantity,
       unitPrice: item.unitPrice.toString(),
       total: item.total.toString(),

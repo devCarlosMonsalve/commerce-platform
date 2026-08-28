@@ -34,6 +34,11 @@ export interface OrganizationResponse {
   updatedAt: string;
 }
 
+export interface CreateOrganizationRequest {
+  name: string;
+  slug: string;
+}
+
 // Products
 export type ProductStatus = 'ACTIVE' | 'INACTIVE';
 
@@ -50,6 +55,14 @@ export interface ProductResponse {
   updatedAt: string;
 }
 
+export interface ProductUpsertRequest {
+  name: string;
+  description?: string;
+  sku?: string;
+  price: number;
+  stock?: number;
+}
+
 // Customers
 export interface CustomerResponse {
   id: string;
@@ -61,12 +74,21 @@ export interface CustomerResponse {
   updatedAt: string;
 }
 
+export interface CustomerUpsertRequest {
+  name: string;
+  email?: string;
+  phone?: string;
+}
+
 // Orders
-export type OrderStatus = 'DRAFT' | 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+export type OrderStatus = 'DRAFT' | 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 
 export interface OrderItemResponse {
   id: string;
   productId: string;
+  productName: string;
+  productSku: string | null;
+  productDescription: string | null;
   quantity: number;
   unitPrice: string;
   total: string;
@@ -75,10 +97,18 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: string;
   organizationId: string;
-  customerId: string | null;
+  customerId: string;
   status: OrderStatus;
   total: string;
   items: OrderItemResponse[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateOrderRequest {
+  customerId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+  }>;
 }

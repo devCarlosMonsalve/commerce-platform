@@ -1,85 +1,72 @@
-# backend-mmp
+# Commerce Platform API
 
-Backend API for **Commerce Platform** — built with NestJS, Prisma, and PostgreSQL.
+NestJS API for the Commerce Platform multi-tenant SaaS.
 
-[![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?style=flat-square&logo=nestjs&logoColor=white)](https://nestjs.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+## Setup
 
----
-
-## Architecture
-
-Clean Architecture + DDD organized as a modular monolith.
-
-```
-src/
-├── auth/              # JWT authentication
-├── organizations/     # Tenants + memberships
-├── products/          # Product catalog
-├── customers/         # Customer management
-├── orders/            # Order lifecycle
-├── health/            # Health check endpoint
-├── shared/            # Guards, decorators, interceptors
-└── prisma/            # Database service
-```
-
-Each module follows: `domain/` → `application/` → `infrastructure/`
-
----
-
-## Getting Started
-
-### Prerequisites
-- Node.js v20+
-- Docker + Docker Compose
-
-### Setup
+Start PostgreSQL from the repository root, then configure and run this service:
 
 ```bash
-# 1. Start PostgreSQL
-docker compose up -d
-
-# 2. Install dependencies
-npm install
-
-# 3. Configure environment
 cp .env.example .env
-# Edit .env with your values
-
-# 4. Run migrations
+npm install
 npx prisma migrate dev
-
-# 5. Start development server
 npm run start:dev
 ```
 
-API available at: `http://localhost:3000/api`
+The API runs at `http://localhost:3001/api`. The health check is `GET http://localhost:3001/api/health`.
 
-Health check: `http://localhost:3000/api/health`
+## Environment
 
----
-
-## API Endpoints
-
-| Module | Base Path |
+| Variable | Purpose |
 |---|---|
-| Auth | `/api/auth` |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Secret used to sign JWTs |
+| `PORT` | API port; defaults to the local convention `3001` |
+| `CORS_ORIGIN` | Allowed frontend origin; normally `http://localhost:3000` |
+
+The database URL password must be URL encoded. For example, write `%23` instead of `#`.
+
+## API conventions
+
+Protected endpoints require:
+
+```http
+Authorization: Bearer <access-token>
+```
+
+Successful responses use:
+
+```json
+{ "success": true, "data": {}, "message": "optional" }
+```
+
+Errors use:
+
+```json
+{ "success": false, "statusCode": 400, "message": "message", "path": "/api/...", "timestamp": "..." }
+```
+
+## Modules
+
+| Module | Base path |
+|---|---|
+| Authentication | `/api/auth` |
 | Organizations | `/api/organizations` |
 | Products | `/api/organizations/:orgId/products` |
 | Customers | `/api/organizations/:orgId/customers` |
 | Orders | `/api/organizations/:orgId/orders` |
 
----
+The application is a modular monolith using pragmatic Clean Architecture: `domain/`, `application/`, and `infrastructure/` within each business module.
 
 ## Scripts
 
 ```bash
-npm run start:dev     # Development with hot-reload
-npm run build         # Production build
-npm run start:prod    # Production server
-npm run test          # Unit tests
-npm run test:e2e      # End-to-end tests
-npx prisma studio     # Database GUI
+npm run start:dev  # Development server with hot reload
+npm run build      # Production build
+npm run start:prod # Production server
+npm run test       # Unit tests
+npm run test:e2e   # End-to-end tests
+npx prisma studio  # Database GUI
 ```
+
+For complete local setup, see [development documentation](../docs/development.md).

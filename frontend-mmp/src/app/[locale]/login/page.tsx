@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import Box from '@mui/material/Box';
@@ -54,6 +54,12 @@ export default function LoginPage() {
 
   const features = [home('featureTenants'), home('featureOrders'), home('featureRoles')];
 
+  useEffect(() => {
+    if (!auth.isLoading && auth.isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [auth.isAuthenticated, auth.isLoading, router]);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -61,7 +67,7 @@ export default function LoginPage() {
 
     try {
       await auth.login(email, password);
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (submitError) {
       setError(getErrorMessage(submitError, t('genericError')));
     } finally {
