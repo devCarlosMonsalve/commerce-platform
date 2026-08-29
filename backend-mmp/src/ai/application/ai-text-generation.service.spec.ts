@@ -49,4 +49,24 @@ describe('AiTextGenerationService', () => {
     });
     expect(openAiProvider.generateText).toHaveBeenCalledWith(request);
   });
+
+  it('returns Gemini retry metadata when both providers fail', async () => {
+    const geminiProvider = buildProvider(
+      'gemini',
+      jest
+        .fn()
+        .mockRejectedValue(new Error('Please retry in 22.820592499s.')),
+    );
+    const openAiProvider = buildProvider(
+      'openai',
+      jest.fn().mockRejectedValue(new Error('OpenAI unavailable')),
+    );
+    const service = new AiTextGenerationService(openAiProvider, geminiProvider);
+
+    await expect(service.generateText(request)).rejects.toMatchObject({
+      response: expect.objectContaining({
+        retryAfterSeconds: expect.any(Number),
+      }),
+    });
+  });
 });

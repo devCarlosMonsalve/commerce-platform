@@ -293,10 +293,10 @@
   },
   "purchaseOrders": {
     "title": "Purchase orders",
-    "suggestionsTitle": "Purchase suggestions",
-    "suggestionsDescription": "Review active products that are out of stock or running low. No order is created automatically.",
-    "suggestionsAction": "Generate suggestions",
-    "suggestionsError": "Purchase suggestions could not be generated.",
+    "suggestionsTitle": "Supply review",
+    "suggestionsDescription": "Identifies active products with low stock and outstanding supply. No order is created automatically.",
+    "suggestionsAction": "Refresh review",
+    "suggestionsError": "The supply review could not be generated.",
     "suggestionStock": "Stock: {stock}",
     "suggestionOpenOrders": "Open purchase orders: {count}",
     "subtitle": "Create supplier purchase orders, receive items partially, and track procurement history for the active organization.",
@@ -397,6 +397,18 @@
     "noOrganization": "Choose or create an organization to use the assistant.",
     "unavailableTitle": "Context analysis is not available",
     "unavailableDescription": "Use the dashboard for an organization-wide summary and operational search.",
-    "purchaseSuggestionsEyebrow": "Purchase planning"
+    "aiRateLimitNotice": "Gemini has temporarily reached its request limit. Try again in {seconds} seconds.",
+    "purchaseSuggestionsEyebrow": "Purchase planning",
+    "criticalPriority": "Critical · review supply",
+    "attentionPriority": "Attention · review supply",
+    "productSku": "SKU: {sku}",
+    "currentStock": "Current stock: {stock} units",
+    "noOpenPurchases": "No open purchase orders in progress",
+    "pendingReceiptQuantity": "{count} open purchase orders · {quantity} units pending receipt",
+    "outOfStockAction": "Recommended action: create a purchase order to review replenishment.",
+    "lowStockAction": "Recommended action: review replenishment before stock is depleted.",
+    "openPurchaseOrderAction": "Recommended action: review open purchase orders and record the pending receipt.",
+    "createPurchaseOrder": "Create purchase order",
+    "reviewOpenPurchaseOrders": "Review open purchase orders"
   }
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import { type FormEvent, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useOrganization } from '@/context/organization.context';
-import { getErrorMessage } from '@/lib/api-error';
+import { getErrorMessage, getRetryAfterSeconds } from '@/lib/api-error';
 import { aiService } from '@/services/ai.service';
 import type {
   AiPurchaseSuggestionsResponse,
@@ -12,6 +12,7 @@ import type {
   OperationsSummarySection,
 } from '@/types/api';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -55,6 +56,7 @@ export function AiAssistantDrawerContent({
   const [summary, setSummary] = useState<string | null>(null);
   const [summaryProvider, setSummaryProvider] = useState<string | null>(null);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<OperationalSearchResponse | null>(null);
@@ -63,6 +65,20 @@ export function AiAssistantDrawerContent({
   const [suggestions, setSuggestions] = useState<AiPurchaseSuggestionsResponse | null>(null);
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
+
+  useEffect(() => {
+    if (!retryAfterSeconds) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setRetryAfterSeconds((seconds) =>
+        seconds && seconds > 1 ? seconds - 1 : null,
+      );
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [retryAfterSeconds]);
 
   const generateSummary = async () => {
     const organizationId = organization.activeOrganization?.id;
@@ -74,7 +90,9 @@ export function AiAssistantDrawerContent({
       const result = await aiService.generateOperationsSummary(organizationId, section);
       setSummary(result.text);
       setSummaryProvider(result.provider);
+      setRetryAfterSeconds(null);
     } catch (error) {
+      setRetryAfterSeconds(getRetryAfterSeconds(error) ?? null);
       setSummaryError(getErrorMessage(error, dashboard('aiSummaryError')));
     } finally {
       setIsGeneratingSummary(false);
@@ -94,7 +112,9 @@ export function AiAssistantDrawerContent({
     setSearchError(null);
     try {
       setSearchResult(await aiService.searchOperations(organizationId, trimmedQuery));
+      setRetryAfterSeconds(null);
     } catch (error) {
+      setRetryAfterSeconds(getRetryAfterSeconds(error) ?? null);
       setSearchError(getErrorMessage(error, dashboard('operationalSearchError')));
     } finally {
       setIsSearching(false);
@@ -153,6 +173,11 @@ export function AiAssistantDrawerContent({
 
   return (
     <Stack spacing={2.5}>
+      {retryAfterSeconds ? (
+        <Alert severity="warning" aria-live="polite">
+          {assistant('aiRateLimitNotice', { seconds: retryAfterSeconds })}
+        </Alert>
+      ) : null}
       {!supportsSummary ? (
         <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: '#FFFFFF' }}>
           <Typography sx={{ fontWeight: 750 }}>{assistant('unavailableTitle')}</Typography>
@@ -181,7 +206,7 @@ export function AiAssistantDrawerContent({
             </Box>
           ) : null}
           {summaryError ? <Typography color="error" sx={{ mt: 1.25, fontSize: '0.88rem' }}>{summaryError}</Typography> : null}
-          <Button fullWidth variant="contained" disabled={isGeneratingSummary} onClick={() => void generateSummary()} startIcon={isGeneratingSummary ? <CircularProgress color="inherit" size={16} /> : summary ? <RefreshRoundedIcon /> : <AutoAwesomeRoundedIcon />} sx={{ mt: 1.75 }}>
+          <Button fullWidth variant="contained" disabled={isGeneratingSummary || Boolean(retryAfterSeconds)} onClick={() => void generateSummary()} startIcon={isGeneratingSummary ? <CircularProgress color="inherit" size={16} /> : summary ? <RefreshRoundedIcon /> : <AutoAwesomeRoundedIcon />} sx={{ mt: 1.75 }}>
             {isGeneratingSummary ? dashboard('aiSummaryLoading') : summary ? dashboard('aiSummaryRefreshAction') : isDashboard ? dashboard('aiSummaryAction') : dashboard('aiSectionSummaryAction')}
           </Button>
         </Paper>
@@ -195,7 +220,7 @@ export function AiAssistantDrawerContent({
           <Box component="form" onSubmit={(event) => void searchOperations(event)} sx={{ mt: 1.5 }}>
             <Stack spacing={1}>
               <TextField value={query} onChange={(event) => setQuery(event.target.value)} placeholder={dashboard('operationalSearchPlaceholder')} size="small" slotProps={{ htmlInput: { maxLength: 300 } }} />
-              <Button type="submit" variant="outlined" disabled={isSearching} startIcon={isSearching ? <CircularProgress size={16} /> : <SearchRoundedIcon />}>{dashboard('operationalSearchAction')}</Button>
+              <Button type="submit" variant="outlined" disabled={isSearching || Boolean(retryAfterSeconds)} startIcon={isSearching ? <CircularProgress size={16} /> : <SearchRoundedIcon />}>{dashboard('operationalSearchAction')}</Button>
             </Stack>
           </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mt: 1.25 }}>
@@ -217,9 +242,24 @@ export function AiAssistantDrawerContent({
           <Typography color="primary" sx={{ fontSize: '0.72rem', fontWeight: 750, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{assistant('purchaseSuggestionsEyebrow')}</Typography>
           <Typography sx={{ mt: 0.5, fontWeight: 750 }}>{purchaseOrders('suggestionsTitle')}</Typography>
           <Typography sx={{ mt: 0.75, color: 'text.secondary', fontSize: '0.9rem', lineHeight: 1.55 }}>{purchaseOrders('suggestionsDescription')}</Typography>
-          {suggestions ? <Stack spacing={1} sx={{ mt: 1.5 }}>{suggestions.suggestions.map((item) => <Box key={item.productId} sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F5F8F4', borderLeft: '3px solid #D1F09B' }}><Typography sx={{ color: '#285C42', fontSize: '0.7rem', fontWeight: 750, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{assistant('purchaseReview')}</Typography><Typography sx={{ mt: 0.35, fontWeight: 750 }}>{item.productName}</Typography><Typography sx={{ mt: 0.6, color: 'text.secondary', fontSize: '0.82rem' }}>{assistant('currentStock', { stock: item.stock })}</Typography><Typography sx={{ mt: 0.25, color: 'text.secondary', fontSize: '0.82rem' }}>{item.openPurchaseOrders ? assistant('openPurchases', { count: item.openPurchaseOrders }) : assistant('noOpenPurchases')}</Typography><Typography sx={{ mt: 0.75, color: '#285C42', fontSize: '0.82rem', lineHeight: 1.45 }}>{assistant(item.stock <= 0 ? 'outOfStockReason' : 'lowStockReason')}</Typography></Box>)}</Stack> : null}
+          {suggestions ? <Stack spacing={1} sx={{ mt: 1.5 }}>{suggestions.suggestions.map((item) => {
+            const hasOpenPurchaseOrders = item.openPurchaseOrders > 0;
+            const action = item.recommendedAction === 'CREATE_PURCHASE_ORDER'
+              ? { href: '/purchase-orders#create-purchase-order' as const, label: assistant('createPurchaseOrder') }
+              : { href: '/purchase-orders#purchase-order-list' as const, label: assistant('reviewOpenPurchaseOrders') };
+
+            return <Box key={item.productId} sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F5F8F4', borderLeft: `3px solid ${item.priority === 'CRITICAL' ? '#C33C2E' : '#D1F09B'}` }}>
+              <Typography sx={{ color: item.priority === 'CRITICAL' ? '#A32F25' : '#285C42', fontSize: '0.7rem', fontWeight: 750, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{assistant(item.priority === 'CRITICAL' ? 'criticalPriority' : 'attentionPriority')}</Typography>
+              <Typography sx={{ mt: 0.35, fontWeight: 750 }}>{item.productName}</Typography>
+              {item.productSku ? <Typography sx={{ mt: 0.2, color: 'text.secondary', fontSize: '0.78rem' }}>{assistant('productSku', { sku: item.productSku })}</Typography> : null}
+              <Typography sx={{ mt: 0.6, color: 'text.secondary', fontSize: '0.82rem' }}>{assistant('currentStock', { stock: item.stock })}</Typography>
+              <Typography sx={{ mt: 0.25, color: 'text.secondary', fontSize: '0.82rem' }}>{hasOpenPurchaseOrders ? assistant('pendingReceiptQuantity', { count: item.openPurchaseOrders, quantity: item.pendingReceiptQuantity }) : assistant('noOpenPurchases')}</Typography>
+              <Typography sx={{ mt: 0.75, color: item.priority === 'CRITICAL' ? '#A32F25' : '#285C42', fontSize: '0.82rem', lineHeight: 1.45 }}>{assistant(hasOpenPurchaseOrders ? 'openPurchaseOrderAction' : item.priority === 'CRITICAL' ? 'outOfStockAction' : 'lowStockAction')}</Typography>
+              <Button component={Link} href={action.href} onClick={onNavigate} endIcon={<ArrowForwardRoundedIcon />} size="small" sx={{ mt: 0.75, px: 0 }}>{action.label}</Button>
+            </Box>;
+          })}</Stack> : null}
           {suggestionsError ? <Typography color="error" sx={{ mt: 1.25, fontSize: '0.88rem' }}>{suggestionsError}</Typography> : null}
-          <Button fullWidth variant="outlined" disabled={isGeneratingSuggestions} onClick={() => void generateSuggestions()} startIcon={isGeneratingSuggestions ? <CircularProgress size={16} /> : <AutoAwesomeRoundedIcon />} sx={{ mt: 1.75 }}>{purchaseOrders('suggestionsAction')}</Button>
+          <Button fullWidth variant="outlined" disabled={isGeneratingSuggestions} onClick={() => void generateSuggestions()} startIcon={isGeneratingSuggestions ? <CircularProgress size={16} /> : <RefreshRoundedIcon />} sx={{ mt: 1.75 }}>{purchaseOrders('suggestionsAction')}</Button>
         </Paper>
       ) : null}
 

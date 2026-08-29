@@ -14,6 +14,16 @@ import type {
   GenerateTextResponse,
 } from './ai-text-generation.provider';
 
+const GEMINI_RETRY_DELAY_PATTERN = /Please retry in\s+([\d.]+)s\./i;
+
+function getGeminiRetryAfterSeconds(error: unknown): number | undefined {
+  const message = error instanceof Error ? error.message : '';
+  const match = GEMINI_RETRY_DELAY_PATTERN.exec(message);
+  const seconds = match?.[1] ? Number.parseFloat(match[1]) : Number.NaN;
+
+  return Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : undefined;
+}
+
 @Injectable()
 export class AiTextGenerationService {
   private readonly logger = new Logger(AiTextGenerationService.name);
@@ -26,9 +36,15 @@ export class AiTextGenerationService {
   ) {}
 
   async generateText(request: GenerateTextRequest): Promise<GenerateTextResponse> {
+    let geminiRetryAt: number | undefined;
+
     try {
       return await this.geminiProvider.generateText(request);
     } catch (geminiError) {
+      const retryAfterSeconds = getGeminiRetryAfterSeconds(geminiError);
+      geminiRetryAt = retryAfterSeconds
+        ? Date.now() + retryAfterSeconds * 1000
+        : undefined;
       this.logger.warn(
         'Gemini text generation failed. Trying OpenAI fallback.',
         geminiError instanceof Error ? geminiError.stack : undefined,
@@ -42,9 +58,13 @@ export class AiTextGenerationService {
         'OpenAI text generation failed after Gemini fallback.',
         openAiError instanceof Error ? openAiError.stack : undefined,
       );
-      throw new ServiceUnavailableException(
-        'Gemini and OpenAI text generation failed. Review backend logs.',
-      );
+      const retryAfterSeconds = geminiRetryAt
+        ? Math.max(1, Math.ceil((geminiRetryAt - Date.now()) / 1000))
+        : undefined;
+      throw new ServiceUnavailableException({
+        message: 'Gemini and OpenAI text generation failed. Review backend logs.',
+        ...(retryAfterSeconds ? { retryAfterSeconds } : {}),
+      });
     }
   }
 }

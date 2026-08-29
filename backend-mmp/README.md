@@ -58,6 +58,11 @@ Errors use:
 { "success": false, "statusCode": 400, "message": "message", "path": "/api/...", "timestamp": "..." }
 ```
 
+When Gemini reports a temporary rate limit and the OpenAI fallback also fails,
+the `503` response can additionally include `retryAfterSeconds`. This exposes
+only the whole-number wait time needed by the frontend; provider error details
+remain in the backend logs.
+
 Organization routes require an active membership for the requested `:orgId`.
 Create, update, delete, lifecycle, and receipt operations that need elevated
 permissions are restricted to `OWNER` and `ADMIN`.
@@ -108,6 +113,11 @@ Gemini is the primary provider; OpenAI is invoked only when Gemini fails.
 Missing provider configuration fails explicitly rather than silently masking a
 configuration problem.
 
+When both providers fail after Gemini reports `Please retry in ...s`, the
+application preserves the remaining wait time in `retryAfterSeconds`. The
+frontend uses it to show a localized countdown and prevent repeated LLM
+requests until the delay expires.
+
 `GET /api/organizations/:orgId/ai/connectors/verify` is a restricted
 connectivity check for `OWNER` and `ADMIN` memberships. It sends the fixed,
 non-business prompt `Reply with exactly: CONNECTION_OK` to Gemini first. OpenAI
@@ -138,9 +148,20 @@ does not permit generated SQL, arbitrary filters, mutations, or access to
 another tenant's data.
 
 `GET /api/organizations/:orgId/ai/purchase-suggestions` identifies active
-products with stock at or below five units and includes related open purchase
-orders. It is read-only and never creates purchase orders, quantities, or
-suppliers automatically.
+products with stock at or below five units. This deterministic, tenant-scoped
+review does not call Gemini or OpenAI, so it remains available while LLM
+providers are unavailable or rate limited. For each product, it returns:
+
+- `CRITICAL` priority for zero or negative stock; otherwise `ATTENTION`.
+- The number of open `ORDERED` or `PARTIALLY_RECEIVED` purchase orders.
+- The sum of quantities still pending receipt (`orderedQuantity -
+  receivedQuantity`) across those open orders.
+- A `recommendedAction` of `CREATE_PURCHASE_ORDER` when no supply is open, or
+  `REVIEW_OPEN_PURCHASE_ORDERS` when receipts remain pending.
+
+The endpoint is read-only and never creates purchase orders, quantities, or
+suppliers automatically. It is restricted to `OWNER` and `ADMIN` memberships,
+like the other AI routes.
 
 ## Scripts
 

@@ -4,6 +4,7 @@ export interface PurchaseSuggestion {
   productSku: string | null;
   stock: number;
   openPurchaseOrders: number;
+  pendingReceiptQuantity: number;
 }
 
 export interface PurchaseSuggestionsRepository {

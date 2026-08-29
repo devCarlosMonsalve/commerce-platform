@@ -28,6 +28,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       typeof exceptionResponse === 'string'
         ? exceptionResponse
         : (exceptionResponse as { message?: string | string[] }).message;
+    const retryAfterSeconds =
+      typeof exceptionResponse === 'object' && exceptionResponse !== null
+        ? (exceptionResponse as { retryAfterSeconds?: unknown })
+            .retryAfterSeconds
+        : undefined;
 
     response.status(status).json({
       success: false,
@@ -35,6 +40,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message: Array.isArray(message) ? message : (message ?? 'An error occurred'),
       path: request.url,
       timestamp: new Date().toISOString(),
+      ...(typeof retryAfterSeconds === 'number' && retryAfterSeconds > 0
+        ? { retryAfterSeconds }
+        : {}),
     });
   }
 }

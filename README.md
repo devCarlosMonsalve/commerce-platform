@@ -46,8 +46,9 @@ PostgreSQL.
 AI is an assistive, read-only capability rather than a system of record.
 Google Gemini is the primary text-generation provider and OpenAI is invoked
 only as a fallback. The global Operations Assistant drawer exposes explicit
-summaries, guided searches, and purchase-review suggestions without allowing
-the LLM to execute arbitrary queries, mutate data, or bypass tenant isolation.
+summaries and guided searches without allowing the LLM to execute arbitrary
+queries, mutate data, or bypass tenant isolation. Purchase review is a
+deterministic backend capability and does not depend on an LLM.
 
 ## Current MVP status
 
@@ -58,7 +59,7 @@ the LLM to execute arbitrary queries, mutate data, or bypass tenant isolation.
 | Frontend | Internationalized landing, authentication, active organization selection, dashboard, products, customers, sales orders, suppliers, and purchase orders |
 | Order lifecycle | Customer validation, historical product snapshots, and `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED` transitions |
 | Purchasing | Partial or complete purchase receipts increase product stock |
-| AI assistance | Optional right-side Operations Assistant for summaries, guided search, and purchase-review suggestions |
+| AI assistance | Optional right-side Operations Assistant for LLM summaries, guided search, and deterministic supply review |
 | Quality | Backend unit tests and frontend Playwright public-route tests; OpenAPI/Swagger documentation remains pending |
 
 ## Key business rules
@@ -124,13 +125,21 @@ Available assistance:
 - Organization and route-contextual summaries based on aggregate metrics.
 - Guided operational search limited to out-of-stock products, pending sales
   orders, and open purchase orders.
-- Purchase-review suggestions for active products with stock at or below five
-  units, including related open purchase orders.
+- **Supply review** for active products with stock at or below five units. It
+  identifies critical stock, open purchase orders, quantities pending receipt,
+  and the appropriate next action: create a purchase order or review an
+  existing receipt.
 
 Gemini is called first; OpenAI is used only if Gemini fails. AI failures are
 contained in the drawer and do not block normal operational workflows. The
 backend keeps tenant isolation by using fixed organization-scoped queries; it
 does not allow AI-generated SQL, arbitrary filters, or mutations.
+
+When Gemini reports a temporary request limit and the OpenAI fallback also
+fails, the API returns a limited `retryAfterSeconds` value. The frontend shows
+a localized countdown and temporarily disables LLM actions. It does not expose
+provider error details or credentials. Supply review remains available because
+it does not call an LLM.
 
 ## Quick start
 
@@ -180,9 +189,12 @@ All protected endpoints require `Authorization: Bearer <token>`.
 | AI summary | `GET /api/organizations/:orgId/ai/operations-summary` |
 | AI section summary | `GET /api/organizations/:orgId/ai/operations-summary/:section` |
 | AI operational search | `POST /api/organizations/:orgId/ai/operations/search` |
-| AI purchase suggestions | `GET /api/organizations/:orgId/ai/purchase-suggestions` |
+| Supply review | `GET /api/organizations/:orgId/ai/purchase-suggestions` |
 
-Successful API responses follow `{ success: true, data, message? }`. Errors follow a consistent `{ success: false, statusCode, message, path, timestamp }` format.
+Successful API responses follow `{ success: true, data, message? }`. Errors
+follow a consistent `{ success: false, statusCode, message, path, timestamp }`
+format. Temporary Gemini rate-limit failures may additionally include
+`retryAfterSeconds`.
 
 Organization endpoints require authenticated membership for the `:orgId` route
 parameter. Elevated mutations are restricted to organization `OWNER` and
@@ -194,7 +206,6 @@ parameter. Elevated mutations are restricted to organization `OWNER` and
 commerce-platform/
 ├── backend-mmp/            # NestJS API
 ├── frontend-mmp/           # Next.js application
-├── docs/                   # Architecture and development documentation
 └── docker-compose.yml      # Local PostgreSQL
 ```
 

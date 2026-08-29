@@ -441,6 +441,7 @@ export default function PurchaseOrdersPage() {
       description={t('subtitle')}
       action={
         <Button
+          id="create-purchase-order"
           variant="contained"
           startIcon={<AddRoundedIcon />}
           onClick={handleOpenCreate}
@@ -497,7 +498,7 @@ export default function PurchaseOrdersPage() {
             ))}
           </Box>
 
-          <Stack spacing={2}>
+          <Stack id="purchase-order-list" spacing={2}>
             {isLoading ? (
               <Paper elevation={0} sx={{ p: 4, borderRadius: 3, display: 'grid', placeItems: 'center' }}>
                 <CircularProgress />

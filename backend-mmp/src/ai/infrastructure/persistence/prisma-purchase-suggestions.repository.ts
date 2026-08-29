@@ -33,7 +33,11 @@ export class PrismaPurchaseSuggestionsRepository
               status: { in: ['ORDERED', 'PARTIALLY_RECEIVED'] },
             },
           },
-          select: { id: true },
+          select: {
+            purchaseOrderId: true,
+            orderedQuantity: true,
+            receivedQuantity: true,
+          },
         },
       },
       orderBy: [{ stock: 'asc' }, { updatedAt: 'asc' }],
@@ -45,7 +49,14 @@ export class PrismaPurchaseSuggestionsRepository
       productName: product.name,
       productSku: product.sku,
       stock: product.stock,
-      openPurchaseOrders: product.purchaseOrderItems.length,
+      openPurchaseOrders: new Set(
+        product.purchaseOrderItems.map((item) => item.purchaseOrderId),
+      ).size,
+      pendingReceiptQuantity: product.purchaseOrderItems.reduce(
+        (total, item) =>
+          total + Math.max(0, item.orderedQuantity - item.receivedQuantity),
+        0,
+      ),
     }));
   }
 }

@@ -93,12 +93,10 @@ export class AiController {
   @UseGuards(JwtAuthGuard, OrganizationMemberGuard, RolesGuard)
   async generatePurchaseSuggestions(
     @Param('orgId') organizationId: string,
-    @Headers('accept-language') acceptLanguage?: string,
   ) {
     const suggestions = await this.generatePurchaseSuggestionsUseCase.execute(
       organizationId,
-      acceptLanguage ?? 'es',
     );
-    return ok(suggestions, 'Purchase suggestions generated successfully');
+    return ok(suggestions, 'Purchase review generated successfully');
   }
 }

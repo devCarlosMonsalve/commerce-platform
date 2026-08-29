@@ -63,12 +63,19 @@ API results.
 Owners and administrators access AI from the global right-side Operations
 Assistant drawer. It never runs automatically: users explicitly request an
 organization summary, a route-contextual summary, guided operational search,
-or purchase suggestions. The drawer keeps AI secondary to normal workflows and
+or supply review. The drawer keeps AI secondary to normal workflows and
 contains provider failures without blocking catalog, sales, or purchasing work.
 
-Purchase suggestions identify active products with stock at or below five
-units and show their current stock and related open purchase orders. They are
-read-only recommendations that require human review and never create orders.
+LLM actions use Gemini first and OpenAI only as a fallback. If Gemini supplies
+a temporary retry time and both providers fail, the drawer shows a localized
+countdown and temporarily disables its LLM actions. It never displays raw
+provider errors, quota data, or credentials.
+
+Supply review is independent of LLM availability. It identifies active products
+with stock at or below five units and shows their priority, current stock, open
+purchase orders, and units pending receipt. Each item directs the user to
+create a purchase order or review open purchase orders; it is read-only,
+requires human review, and never creates orders automatically.
 
 ## Structure
 

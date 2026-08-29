@@ -25,13 +25,18 @@ export type OperationsSummarySection =
   | 'sales-orders'
   | 'purchase-orders';
 
-export interface AiPurchaseSuggestionsResponse extends AiOperationsSummaryResponse {
+export interface AiPurchaseSuggestionsResponse {
   suggestions: Array<{
     productId: string;
     productName: string;
     productSku: string | null;
     stock: number;
     openPurchaseOrders: number;
+    pendingReceiptQuantity: number;
+    priority: 'CRITICAL' | 'ATTENTION';
+    recommendedAction:
+      | 'CREATE_PURCHASE_ORDER'
+      | 'REVIEW_OPEN_PURCHASE_ORDERS';
   }>;
 }
 
