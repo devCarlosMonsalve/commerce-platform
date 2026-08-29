@@ -25,6 +25,10 @@ The API runs at `http://localhost:3001/api`. The health check is `GET http://loc
 | `JWT_SECRET` | Secret used to sign JWTs |
 | `PORT` | API port; defaults to the local convention `3001` |
 | `CORS_ORIGIN` | Allowed frontend origin(s); normally `http://localhost:3000` |
+| `OPENAI_API_KEY` | API key for the OpenAI text-generation connector |
+| `OPENAI_MODEL` | OpenAI model; defaults to `gpt-4.1-mini` |
+| `GEMINI_API_KEY` | API key for the Google Gemini text-generation connector |
+| `GEMINI_MODEL` | Gemini model; defaults to `gemini-3.6-flash` |
 
 The database URL password must be URL encoded. For example, write `%23` instead of `#`.
 
@@ -95,6 +99,43 @@ Controllers remain thin, use cases coordinate workflows, and Prisma access is
 contained in infrastructure repositories. PostgreSQL 16 is accessed through
 Prisma 6, which also manages migrations. Global validation, Helmet, an
 exception filter, logging interceptor, and request throttling are enabled.
+
+## AI connectors
+
+The `ai` module provides independently configurable OpenAI and Google Gemini
+text-generation connectors behind a provider-neutral application contract.
+Gemini is the primary provider; OpenAI is invoked only when Gemini fails.
+Missing provider configuration fails explicitly rather than silently masking a
+configuration problem.
+
+`GET /api/organizations/:orgId/ai/connectors/verify` is a restricted
+connectivity check for `OWNER` and `ADMIN` memberships. It sends the fixed,
+non-business prompt `Reply with exactly: CONNECTION_OK` to Gemini first. OpenAI
+is called only as a fallback if Gemini fails. The response identifies the
+provider that generated the text. If both providers fail, the API returns a
+service-unavailable error and detailed provider errors are written to the
+backend log rather than the HTTP response.
+
+`GET /api/organizations/:orgId/ai/operations-summary` lets an `OWNER` or
+`ADMIN` explicitly generate a read-only dashboard summary. It reads only
+tenant-filtered aggregate counts for products, sales orders, and purchase
+orders, then passes those metrics to the connector. It never sends customer
+details, user data, order contents, IDs, or financial values. The response
+identifies the provider and model used to produce the summary.
+
+Section-specific summaries use the same authorization and provider strategy:
+`GET /api/organizations/:orgId/ai/operations-summary/products`,
+`GET /api/organizations/:orgId/ai/operations-summary/sales-orders`, and
+`GET /api/organizations/:orgId/ai/operations-summary/purchase-orders`. Each
+prompt receives only the aggregate metrics belonging to its requested section.
+
+`POST /api/organizations/:orgId/ai/operations/search` lets an `OWNER` or
+`ADMIN` explicitly search current operational data. The connector may classify
+only three supported queries: out-of-stock products, sales orders in `PENDING`,
+or purchase orders in `ORDERED` or `PARTIALLY_RECEIVED`. The backend maps the
+classification to fixed Prisma queries, each filtered by `organizationId`; it
+does not permit generated SQL, arbitrary filters, mutations, or access to
+another tenant's data.
 
 ## Scripts
 

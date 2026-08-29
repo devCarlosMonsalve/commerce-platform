@@ -13,6 +13,45 @@ export interface ApiError {
   timestamp: string;
 }
 
+// AI
+export interface AiOperationsSummaryResponse {
+  provider: 'openai' | 'gemini';
+  model: string;
+  text: string;
+}
+
+export type OperationsSummarySection =
+  | 'products'
+  | 'sales-orders'
+  | 'purchase-orders';
+
+export interface AiPurchaseSuggestionsResponse extends AiOperationsSummaryResponse {
+  suggestions: Array<{
+    productId: string;
+    productName: string;
+    productSku: string | null;
+    stock: number;
+    openPurchaseOrders: number;
+  }>;
+}
+
+export type OperationalSearchIntent =
+  | 'OUT_OF_STOCK_PRODUCTS'
+  | 'PENDING_SALES_ORDERS'
+  | 'OPEN_PURCHASE_ORDERS'
+  | 'UNSUPPORTED';
+
+export interface OperationalSearchResponse {
+  intent: OperationalSearchIntent;
+  provider: 'openai' | 'gemini';
+  model: string;
+  items: Array<{
+    id: string;
+    label: string;
+    detail: string;
+  }>;
+}
+
 // Auth
 export interface UserResponse {
   id: string;

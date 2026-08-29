@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
+import { AiModule } from './ai/ai.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
@@ -17,6 +18,7 @@ import { PurchasingModule } from './purchasing/purchasing.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
     PrismaModule,
     HealthModule,
+    AiModule,
     AuthModule,
     OrganizationsModule,
     ProductsModule,

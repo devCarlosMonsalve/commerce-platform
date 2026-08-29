@@ -225,7 +225,6 @@ export default function ProductsPage() {
       ) : (
         <Stack spacing={3}>
           {error ? <Alert severity="error">{error}</Alert> : null}
-
           <Box
             sx={{
               display: 'grid',

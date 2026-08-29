@@ -353,9 +353,22 @@ Current integrations are intentionally limited:
   httpOnly cookie.
 - The backend connects to PostgreSQL through Prisma and `DATABASE_URL`.
 - Docker Compose provisions PostgreSQL for local development.
+- The backend contains independently configurable OpenAI and Google Gemini
+  text-generation connectors behind a provider-neutral contract. Gemini is
+  primary and OpenAI is a fallback only after a Gemini failure. Restricted
+  administrator-only endpoints provide a fixed-prompt connectivity check, an
+  explicit operational-summary request, and guided operational search. The
+  summary sends only tenant-filtered aggregate product, sales-order, and
+  purchase-order metrics; it does not send personal data, IDs, order content,
+  or financial values. Search is limited to a closed set of intents for
+  out-of-stock products, pending sales orders, and open purchase orders; its
+  connector output cannot generate arbitrary database queries or mutations.
+  Product, sales-order, and purchase-order screens also offer explicit,
+  section-scoped summaries that send metrics from only their own section.
 
 There are no external payment, invoicing, shipping, notification, analytics, or
-AI integrations in the current MVP.
+other active AI product integrations beyond the read-only dashboard assistance
+described above.
 
 ## MVP User Journey
 

@@ -60,6 +60,18 @@ Order lifecycles, historical product snapshots, receipt validation, and stock
 updates are enforced by the backend; the frontend presents their workflows and
 API results.
 
+Owners and administrators can explicitly generate a read-only operational
+summary from the dashboard. The frontend requests the organization-scoped API
+endpoint only after the user selects the action, then displays the generated
+text and its provider. No AI request is made automatically on dashboard load.
+They can also use the dashboard's guided operational search for out-of-stock
+products, pending sales orders, and open purchase orders. It presents only
+results from the active organization and links users to the corresponding
+management section.
+
+Products, sales orders, and purchase orders each provide an on-demand,
+read-only AI summary based only on that section's aggregate operational data.
+
 ## Structure
 
 ```text

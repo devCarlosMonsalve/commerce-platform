@@ -28,6 +28,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
@@ -277,7 +278,6 @@ export default function OrdersPage() {
       ) : (
         <Stack spacing={3}>
           {error ? <Alert severity="error">{error}</Alert> : null}
-
           {!canCreateOrder ? (
             <Alert severity="info">
               {customers.length === 0 ? t('requiresCustomer') : t('requiresProduct')}
@@ -437,15 +437,8 @@ export default function OrdersPage() {
                 <Typography variant="body2" sx={{ mb: 1, color: '#6B6455', fontWeight: 600 }}>
                   {t('customer')}
                 </Typography>
-                <Select
-                  value={customerId}
-                  onChange={(event) => setCustomerId(event.target.value)}
-                >
-                  {customers.map((customer) => (
-                    <MenuItem key={customer.id} value={customer.id}>
-                      {customer.name}
-                    </MenuItem>
-                  ))}
+                <Select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
+                  {customers.map((customer) => <MenuItem key={customer.id} value={customer.id}>{customer.name}</MenuItem>)}
                 </Select>
               </FormControl>
 
@@ -472,16 +465,18 @@ export default function OrdersPage() {
                       <Box
                         sx={{
                           display: 'grid',
-                          gridTemplateColumns: { xs: '1fr', md: '2fr 1fr auto' },
-                          gap: 2,
+                          gridTemplateColumns: {
+                            xs: 'minmax(0, 1fr) minmax(118px, 0.42fr) auto',
+                            md: '2fr 1fr auto',
+                          },
+                          gap: { xs: 1, sm: 2 },
                           alignItems: 'center',
                         }}
                       >
                         <FormControl fullWidth required>
-                          <Typography variant="body2" sx={{ mb: 1, color: '#6B6455', fontWeight: 600 }}>
-                            {t('product')}
-                          </Typography>
+                          <InputLabel>{t('product')}</InputLabel>
                           <Select
+                            label={t('product')}
                             value={item.productId}
                             onChange={(event) =>
                               handleItemChange(index, 'productId', event.target.value)

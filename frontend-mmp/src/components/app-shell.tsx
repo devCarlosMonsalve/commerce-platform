@@ -7,6 +7,7 @@ import { getErrorMessage } from '@/lib/api-error';
 import { useAuth } from '@/context/auth.context';
 import { useOrganization } from '@/context/organization.context';
 import { LanguageSwitcher } from './language-switcher';
+import { AiAssistantDrawerContent } from './ai-assistant-drawer-content';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,6 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
@@ -31,6 +33,8 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import type { SvgIconComponent } from '@mui/icons-material';
 
 interface AppShellProps {
@@ -64,6 +68,7 @@ export function AppShell({ title, description, children, action }: AppShellProps
   const common = useTranslations('common');
   const authMessages = useTranslations('auth');
   const organizationsMessages = useTranslations('organizations');
+  const assistantMessages = useTranslations('assistant');
   const auth = useAuth();
   const organization = useOrganization();
   const router = useRouter();
@@ -73,6 +78,7 @@ export function AppShell({ title, description, children, action }: AppShellProps
   const [organizationName, setOrganizationName] = useState('');
   const [organizationSlug, setOrganizationSlug] = useState('');
   const [createError, setCreateError] = useState<string | null>(null);
+  const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
@@ -443,6 +449,30 @@ export function AppShell({ title, description, children, action }: AppShellProps
           </DialogActions>
         </Box>
       </Dialog>
+      <Button
+        onClick={() => setIsAiDrawerOpen(true)}
+        startIcon={<AutoAwesomeRoundedIcon />}
+        sx={{ position: 'fixed', right: 24, bottom: 24, zIndex: 1200, color: '#173528', bgcolor: '#D1F09B', boxShadow: '0 10px 24px rgba(23,53,40,0.22)', fontWeight: 750, '&:hover': { bgcolor: '#E1F7B5' } }}
+      >
+        {assistantMessages('open')}
+      </Button>
+      <Drawer anchor="right" open={isAiDrawerOpen} onClose={() => setIsAiDrawerOpen(false)} slotProps={{ paper: { sx: { width: { xs: '100%', sm: 480 }, p: { xs: 2, sm: 2.5 }, bgcolor: '#F5F7F4' } } }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, mb: 2.5 }}>
+          <Box>
+            <Typography sx={{ color: '#173528', fontWeight: 750, fontSize: '1.2rem' }}>{assistantMessages('title')}</Typography>
+            <Typography sx={{ mt: 0.5, color: '#587061', fontSize: '0.9rem', lineHeight: 1.5 }}>{assistantMessages('description')}</Typography>
+          </Box>
+          <Button aria-label={assistantMessages('close')} onClick={() => setIsAiDrawerOpen(false)} sx={{ minWidth: 40, width: 40, height: 40, p: 0, color: '#285C42' }}>
+            <CloseRoundedIcon />
+          </Button>
+        </Box>
+        <AiAssistantDrawerContent
+          key={`${pathname}-${organization.activeOrganization?.id ?? 'none'}`}
+          pathname={pathname}
+          title={title}
+          onNavigate={() => setIsAiDrawerOpen(false)}
+        />
+      </Drawer>
     </>
   );
 }

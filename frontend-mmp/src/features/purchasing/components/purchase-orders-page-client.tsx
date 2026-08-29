@@ -462,7 +462,6 @@ export default function PurchaseOrdersPage() {
       ) : (
         <Stack spacing={3}>
           {pageError ? <Alert severity="error">{pageError}</Alert> : null}
-
           {!canCreatePurchaseOrder ? (
             <Alert severity="info">
               {suppliers.length === 0 ? t('requiresSupplier') : t('requiresProduct')}
