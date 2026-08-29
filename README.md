@@ -32,6 +32,7 @@ orders.
 | Frontend | Internationalized landing, authentication, active organization selection, dashboard, products, customers, sales orders, suppliers, and purchase orders |
 | Order lifecycle | Customer validation, historical product snapshots, and `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED` transitions |
 | Purchasing | Partial or complete purchase receipts increase product stock |
+| AI assistance | Optional right-side Operations Assistant for summaries, guided search, and purchase-review suggestions |
 | Quality | Backend unit tests and frontend Playwright public-route tests; OpenAPI/Swagger documentation remains pending |
 
 ## Key business rules
@@ -56,6 +57,54 @@ orders.
 | Database | PostgreSQL 16 in Docker Compose |
 | Frontend | Next.js 16, Material UI, Tailwind CSS, next-intl |
 | Authentication | JWT in an httpOnly cookie |
+| AI connectors | Google Gemini primary, OpenAI fallback |
+
+## Architecture
+
+The repository is a modular monolith: the Next.js frontend and NestJS API are
+separate applications, while the API is deployed as one backend. Important
+backend modules follow pragmatic Clean Architecture:
+
+```text
+presentation -> application -> domain
+                         ^
+                  infrastructure
+```
+
+- Controllers receive HTTP input and delegate to use cases.
+- Use cases coordinate authorization-aware workflows and domain behavior.
+- Domain entities and repository contracts remain independent of NestJS and Prisma.
+- Infrastructure repositories implement persistence through Prisma.
+- `Organization` is the mandatory tenant boundary for every owned resource.
+
+## Operational flows
+
+1. A user registers, creates an organization, and becomes its `OWNER`.
+2. Users may belong to multiple organizations; the selected active organization
+   scopes all products, customers, orders, suppliers, and purchasing data.
+3. Sales orders validate customer and product ownership, preserve product
+   snapshots, and use controlled lifecycle transitions.
+4. Purchase orders validate supplier and product ownership. Recorded receipts
+   cannot exceed ordered quantities and increase product stock.
+
+## Operations Assistant
+
+AI is a secondary, opt-in capability in a global right-side drawer for
+organization `OWNER` and `ADMIN` users. It never performs automatic requests,
+creates records, changes stock, or changes order status.
+
+Available assistance:
+
+- Organization and route-contextual summaries based on aggregate metrics.
+- Guided operational search limited to out-of-stock products, pending sales
+  orders, and open purchase orders.
+- Purchase-review suggestions for active products with stock at or below five
+  units, including related open purchase orders.
+
+Gemini is called first; OpenAI is used only if Gemini fails. AI failures are
+contained in the drawer and do not block normal operational workflows. The
+backend keeps tenant isolation by using fixed organization-scoped queries; it
+does not allow AI-generated SQL, arbitrary filters, or mutations.
 
 ## Quick start
 
@@ -85,7 +134,7 @@ orders.
    npm run dev
    ```
 
-See [local development](docs/development.md) for the complete environment configuration.
+See the backend and frontend README files for local environment configuration.
 
 ## API overview
 
@@ -101,6 +150,11 @@ All protected endpoints require `Authorization: Bearer <token>`.
 | Orders | `/api/organizations/:orgId/orders` |
 | Suppliers | `/api/organizations/:orgId/suppliers` |
 | Purchase orders | `/api/organizations/:orgId/purchase-orders` |
+| AI verification | `GET /api/organizations/:orgId/ai/connectors/verify` |
+| AI summary | `GET /api/organizations/:orgId/ai/operations-summary` |
+| AI section summary | `GET /api/organizations/:orgId/ai/operations-summary/:section` |
+| AI operational search | `POST /api/organizations/:orgId/ai/operations/search` |
+| AI purchase suggestions | `GET /api/organizations/:orgId/ai/purchase-suggestions` |
 
 Successful API responses follow `{ success: true, data, message? }`. Errors follow a consistent `{ success: false, statusCode, message, path, timestamp }` format.
 
@@ -118,4 +172,16 @@ commerce-platform/
 └── docker-compose.yml      # Local PostgreSQL
 ```
 
-The backend follows pragmatic Clean Architecture and DDD within a modular monolith. Read [project context](docs/project-context.md) for the domain vision and constraints.
+## Repository guides
+
+- [Backend README](backend-mmp/README.md): API configuration, scripts, and AI
+  connector details.
+- [Frontend README](frontend-mmp/README.md): web application behavior and UI
+  structure.
+
+## Out of scope
+
+The MVP intentionally excludes a public storefront, payments, invoices,
+shipping, addresses, notifications, analytics, reporting, inventory movements,
+complex permissions, autonomous AI agents, RAG, CQRS, event sourcing, message
+brokers, and microservices.

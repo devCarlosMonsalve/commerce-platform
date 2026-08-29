@@ -137,6 +137,11 @@ classification to fixed Prisma queries, each filtered by `organizationId`; it
 does not permit generated SQL, arbitrary filters, mutations, or access to
 another tenant's data.
 
+`GET /api/organizations/:orgId/ai/purchase-suggestions` identifies active
+products with stock at or below five units and includes related open purchase
+orders. It is read-only and never creates purchase orders, quantities, or
+suppliers automatically.
+
 ## Scripts
 
 ```bash
@@ -148,4 +153,5 @@ npm run test:e2e   # End-to-end tests
 npx prisma studio  # Database GUI
 ```
 
-For complete local setup, see [development documentation](../docs/development.md).
+For local setup, configure the variables in `.env.example` and follow the setup
+steps above.
