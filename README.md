@@ -2,7 +2,7 @@
 
 # Commerce Platform
 
-**A multi-tenant SaaS platform for centralized commerce operations.**
+**A multi-tenant SaaS platform for centralized commerce operations, built with DDD, Clean Architecture, and optional LLM assistance.**
 
 Manage organizations, products, customers, sales orders, suppliers, and purchase orders from one place.
 
@@ -22,6 +22,32 @@ Commerce Platform is not an e-commerce storefront. It is a Commerce Command Cent
 It is designed as a modular, multi-tenant SaaS application. Each organization
 owns and isolates its products, customers, sales orders, suppliers, and purchase
 orders.
+
+## Core engineering principles
+
+### Multi-tenancy by design
+
+`Organization` is the tenant boundary. Products, customers, sales orders,
+suppliers, and purchase orders always belong to one organization. Every
+organization-scoped request validates the authenticated user's membership and
+filters data by `organizationId`, preventing data exposure between tenants.
+
+### Pragmatic DDD and Clean Architecture
+
+The backend is organized as a modular monolith by business domain. Important
+modules use `presentation`, `application`, `domain`, and `infrastructure`
+layers: controllers stay thin, use cases coordinate workflows, domain entities
+protect business rules, and Prisma remains isolated in infrastructure
+repositories. The domain does not depend on NestJS, HTTP, Prisma, or
+PostgreSQL.
+
+### Optional LLM integration
+
+AI is an assistive, read-only capability rather than a system of record.
+Google Gemini is the primary text-generation provider and OpenAI is invoked
+only as a fallback. The global Operations Assistant drawer exposes explicit
+summaries, guided searches, and purchase-review suggestions without allowing
+the LLM to execute arbitrary queries, mutate data, or bypass tenant isolation.
 
 ## Current MVP status
 
