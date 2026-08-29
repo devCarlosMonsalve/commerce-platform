@@ -1,12 +1,10 @@
-'use client';
-
 import Button from '@mui/material/Button';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { FeedbackScreen } from '@/components/feedback-screen';
 import { Link } from '@/i18n/navigation';
 
-export default function NotFound() {
-  const t = useTranslations('routeStatus.notFound');
+export default async function NotFound() {
+  const t = await getTranslations('routeStatus.notFound');
 
   return (
     <FeedbackScreen

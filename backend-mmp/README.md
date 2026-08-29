@@ -1,6 +1,8 @@
 # Commerce Platform API
 
-NestJS API for the Commerce Platform multi-tenant SaaS.
+NestJS API for the Commerce Platform multi-tenant SaaS. It centralizes
+organization-scoped products, customers, sales orders, suppliers, purchase
+orders, and goods receipts; it is not a public e-commerce storefront.
 
 ## Setup
 
@@ -52,6 +54,10 @@ Errors use:
 { "success": false, "statusCode": 400, "message": "message", "path": "/api/...", "timestamp": "..." }
 ```
 
+Organization routes require an active membership for the requested `:orgId`.
+Create, update, delete, lifecycle, and receipt operations that need elevated
+permissions are restricted to `OWNER` and `ADMIN`.
+
 ## Modules
 
 | Module | Base path |
@@ -64,7 +70,31 @@ Errors use:
 | Suppliers | `/api/organizations/:orgId/suppliers` |
 | Purchase orders | `/api/organizations/:orgId/purchase-orders` |
 
-The application is a modular monolith using pragmatic Clean Architecture: `domain/`, `application/`, and `infrastructure/` within each business module.
+## Business workflows
+
+- **Sales orders:** validate that the customer and products belong to the
+  organization, snapshot product information, calculate totals, and follow
+  `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED`. Orders can be cancelled
+  before completion.
+- **Purchasing:** purchase orders reference organization suppliers and products.
+  `POST /api/organizations/:orgId/purchase-orders/:purchaseOrderId/receipts`
+  records partial or complete receipts and increases product stock.
+
+## Architecture and persistence
+
+The application is a modular monolith using pragmatic Clean Architecture. Each
+business module separates:
+
+```text
+domain/          # Entities, domain errors, and repository contracts
+application/     # DTOs and use cases
+infrastructure/  # HTTP controllers and Prisma repositories
+```
+
+Controllers remain thin, use cases coordinate workflows, and Prisma access is
+contained in infrastructure repositories. PostgreSQL 16 is accessed through
+Prisma 6, which also manages migrations. Global validation, Helmet, an
+exception filter, logging interceptor, and request throttling are enabled.
 
 ## Scripts
 

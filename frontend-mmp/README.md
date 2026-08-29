@@ -1,6 +1,8 @@
 # Commerce Platform Frontend
 
-Next.js application for Commerce Platform.
+Next.js application for the Commerce Platform multi-tenant SaaS. It provides the
+authenticated operational interface for products, customers, sales orders,
+suppliers, purchase orders, and goods receipts.
 
 ## Stack
 
@@ -10,6 +12,7 @@ Next.js application for Commerce Platform.
 | UI | Material UI 9 and Tailwind CSS 4 |
 | Internationalization | next-intl: Spanish, English, and French |
 | Authentication | Backend-issued httpOnly JWT cookie with credentialed Axios requests |
+| API client | Axios, configured through `NEXT_PUBLIC_API_URL` |
 | Language | TypeScript |
 
 ## Setup
@@ -39,17 +42,32 @@ The application runs at `http://localhost:3000`.
 - Active organization selection and persistence
 - Product management: list, create, edit, deactivate
 - Customer management: list, create, edit
-- Order management: list, create, snapshot review, lifecycle actions
+- Sales order management: list, create, snapshot review, and lifecycle actions
 - Supplier management: list, create, and edit
 - Purchase orders: list, create, and receive items partially or completely
+
+## Tenant and session behavior
+
+- The active organization scopes every organization-owned API request.
+- The backend validates the authenticated user's membership before permitting
+  access to that organization's data.
+- Axios sends credentialed requests so the backend-issued httpOnly JWT cookie is
+  included.
+- A `401 Unauthorized` response clears the local authenticated state and
+  redirects the user to the localized login route.
+
+Order lifecycles, historical product snapshots, receipt validation, and stock
+updates are enforced by the backend; the frontend presents their workflows and
+API results.
 
 ## Structure
 
 ```text
 src/
-├── app/[locale]/    # Localized pages
+├── app/[locale]/    # Server-first localized route conventions
 ├── components/      # Shared UI components
 ├── context/         # Authentication and organization state
+├── features/        # Domain-specific interactive client screens
 ├── i18n/            # Locale routing configuration
 ├── lib/             # Axios and Material UI theme
 ├── services/        # API service clients

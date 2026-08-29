@@ -19,7 +19,9 @@ Commerce Platform is not an e-commerce storefront. It is a Commerce Command Cent
 
 > **MANAGE -> MONITOR -> UNDERSTAND -> ACT**
 
-It is designed as a modular, multi-tenant SaaS application. Each organization owns and isolates its products, customers, orders, and memberships.
+It is designed as a modular, multi-tenant SaaS application. Each organization
+owns and isolates its products, customers, sales orders, suppliers, and purchase
+orders.
 
 ## Current MVP status
 
@@ -31,6 +33,20 @@ It is designed as a modular, multi-tenant SaaS application. Each organization ow
 | Order lifecycle | Customer validation, historical product snapshots, and `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED` transitions |
 | Purchasing | Partial or complete purchase receipts increase product stock |
 | Quality | Backend unit tests and frontend Playwright public-route tests; OpenAPI/Swagger documentation remains pending |
+
+## Key business rules
+
+- `Organization` is the tenant boundary. Organization-owned resources are
+  accessed only after validating the user's membership.
+- Users can belong to multiple organizations with `OWNER`, `ADMIN`, or `MEMBER`
+  roles.
+- Sales orders preserve historical product name, SKU, description, and unit-price
+  snapshots, so product changes cannot alter past orders.
+- Sales-order status transitions are domain controlled:
+  `DRAFT` -> `PENDING` -> `CONFIRMED` -> `COMPLETED`, with cancellation
+  available before completion.
+- Purchase orders support partial receipts. Receipt quantities cannot exceed their
+  ordered quantities, and saved receipts increase product stock.
 
 ## Technology
 
@@ -87,6 +103,10 @@ All protected endpoints require `Authorization: Bearer <token>`.
 | Purchase orders | `/api/organizations/:orgId/purchase-orders` |
 
 Successful API responses follow `{ success: true, data, message? }`. Errors follow a consistent `{ success: false, statusCode, message, path, timestamp }` format.
+
+Organization endpoints require authenticated membership for the `:orgId` route
+parameter. Elevated mutations are restricted to organization `OWNER` and
+`ADMIN` roles.
 
 ## Project structure
 
