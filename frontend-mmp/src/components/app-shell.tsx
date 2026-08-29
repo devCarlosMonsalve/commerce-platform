@@ -113,15 +113,15 @@ export function AppShell({ title, description, children, action }: AppShellProps
               py: 1.2,
               mb: 0.75,
               borderRadius: 2.5,
-              color: active ? '#F5F0E8' : '#676356',
-              bgcolor: active ? '#5C6B40' : 'transparent',
+              color: active ? '#173528' : 'rgba(242, 249, 239, 0.68)',
+              bgcolor: active ? '#D1F09B' : 'transparent',
               fontSize: 14,
               fontWeight: active ? 700 : 500,
               opacity: isAvailable ? 1 : 0.45,
               cursor: isAvailable ? 'pointer' : 'not-allowed',
               transition: 'background-color 120ms ease, color 120ms ease',
               '&:hover': isAvailable
-                ? { bgcolor: active ? '#5C6B40' : 'rgba(92,107,64,0.08)' }
+                ? { bgcolor: active ? '#D1F09B' : 'rgba(255,255,255,0.08)' }
                 : undefined,
             }}
           >
@@ -183,76 +183,76 @@ export function AppShell({ title, description, children, action }: AppShellProps
 
   return (
     <>
-      <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: '#F5F0E8', color: '#2C2C20' }}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: '#F5F7F4', color: '#173528' }}>
         <Box
           component="aside"
           sx={{
             width: 264,
             display: { xs: 'none', md: 'flex' },
             flexDirection: 'column',
-            p: 2,
-            bgcolor: '#F8F4EA',
-            borderRight: '1px solid rgba(92,107,64,0.13)',
+            p: 2.25,
+            bgcolor: '#173528',
+            borderRight: '1px solid rgba(16,49,36,0.3)',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, px: 1, py: 1.25 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, px: 0.75, py: 1 }}>
             <Box
               sx={{
                 width: 36,
                 height: 36,
                 display: 'grid',
                 placeItems: 'center',
-                borderRadius: 2.5,
-                color: '#F5F0E8',
-                bgcolor: '#5C6B40',
+                borderRadius: '50%',
+                color: '#173528',
+                bgcolor: '#D1F09B',
               }}
             >
               <StorefrontOutlinedIcon fontSize="small" />
             </Box>
-            <Typography sx={{ fontWeight: 750, letterSpacing: '-0.03em' }}>Commerce</Typography>
+            <Typography sx={{ color: '#F2F9EF', fontWeight: 750, letterSpacing: '-0.03em' }}>Commerce</Typography>
           </Box>
 
           <Typography
             variant="overline"
-            sx={{ mt: 5, px: 1.25, color: '#8B8577', fontSize: 10, fontWeight: 700 }}
+            sx={{ mt: 5, px: 1, color: 'rgba(242,249,239,0.46)', fontSize: 10, fontWeight: 700, letterSpacing: '0.11em' }}
           >
             {organizationsMessages('switcherLabel')}
           </Typography>
 
-          <Paper elevation={0} sx={{ mt: 1, p: 1.5, borderRadius: 3, bgcolor: '#FDFAF4' }}>
+          <Paper elevation={0} sx={{ mt: 1, p: 1.5, borderRadius: 2.5, color: '#F2F9EF', bgcolor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <Typography sx={{ fontWeight: 700 }}>
               {organization.activeOrganization?.name ?? organizationsMessages('emptyTitle')}
             </Typography>
-            <Typography variant="body2" sx={{ mt: 0.5, color: '#777266' }}>
+            <Typography variant="body2" sx={{ mt: 0.5, color: 'rgba(242,249,239,0.58)' }}>
               {organization.activeOrganization?.slug ?? organizationsMessages('emptyDescription')}
             </Typography>
           </Paper>
 
           <Typography
             variant="overline"
-            sx={{ mt: 3, px: 1.25, color: '#8B8577', fontSize: 10, fontWeight: 700 }}
+            sx={{ mt: 3, px: 1, color: 'rgba(242,249,239,0.46)', fontSize: 10, fontWeight: 700, letterSpacing: '0.11em' }}
           >
             {nav('dashboard')}
           </Typography>
           <Box sx={{ mt: 1 }}>{sidebarLinks}</Box>
 
           <Box sx={{ mt: 'auto' }}>
-            <Divider sx={{ mb: 1.5, borderColor: 'rgba(92,107,64,0.13)' }} />
+            <Divider sx={{ mb: 1.5, borderColor: 'rgba(255,255,255,0.12)' }} />
             <Button
               color="inherit"
               fullWidth
               onClick={() => {
                 void handleLogout();
               }}
-              sx={{ justifyContent: 'flex-start', px: 1.25 }}
+              sx={{ justifyContent: 'flex-start', px: 1, color: 'rgba(242,249,239,0.72)' }}
             >
               {authMessages('logout')}
             </Button>
           </Box>
         </Box>
 
-        <Box component="main" sx={{ flex: 1, minWidth: 0, p: { xs: 2, md: 4 } }}>
-          <Stack spacing={3}>
+        <Box component="main" sx={{ flex: 1, minWidth: 0, p: { xs: 2.5, md: 4.5 } }}>
+          <Stack spacing={3.5}>
             <Box
               sx={{
                 display: 'flex',
@@ -263,17 +263,17 @@ export function AppShell({ title, description, children, action }: AppShellProps
               }}
             >
               <Box sx={{ minWidth: 0, flex: '1 1 auto' }}>
-                <Typography variant="body2" sx={{ color: '#8B8577', fontWeight: 700 }}>
+                <Typography variant="body2" sx={{ color: '#668276', fontWeight: 750, letterSpacing: '0.1em', fontSize: '0.68rem' }}>
                   {organizationsMessages('switcherLabel')}
                 </Typography>
                 <Typography
                   component="h1"
                   variant="h4"
-                  sx={{ mt: 0.5, fontWeight: 800, letterSpacing: '-0.045em' }}
+                  sx={{ mt: 0.7, fontWeight: 760, letterSpacing: '-0.055em' }}
                 >
                   {title}
                 </Typography>
-                <Typography sx={{ mt: 1, color: '#6B6455', maxWidth: 700 }}>
+                <Typography sx={{ mt: 1, color: '#698074', maxWidth: 700, lineHeight: 1.65 }}>
                   {description}
                 </Typography>
               </Box>
@@ -295,7 +295,7 @@ export function AppShell({ title, description, children, action }: AppShellProps
                   size="small"
                   sx={{
                     minWidth: { xs: '100%', sm: 260 },
-                    '& .MuiInputBase-root': { bgcolor: '#FDFAF4' },
+                    '& .MuiInputBase-root': { bgcolor: '#FFFFFF' },
                   }}
                 >
                   <Select
@@ -361,9 +361,9 @@ export function AppShell({ title, description, children, action }: AppShellProps
                       borderRadius: 999,
                       whiteSpace: 'nowrap',
                       fontWeight: 600,
-                      color: active ? '#F5F0E8' : '#5C6B40',
-                      bgcolor: active ? '#5C6B40' : '#FDFAF4',
-                      border: '1px solid rgba(92,107,64,0.13)',
+                      color: active ? '#173528' : '#456353',
+                      bgcolor: active ? '#D1F09B' : '#FFFFFF',
+                      border: '1px solid rgba(23,53,40,0.1)',
                       opacity: isAvailable ? 1 : 0.45,
                       cursor: isAvailable ? 'pointer' : 'not-allowed',
                     }}

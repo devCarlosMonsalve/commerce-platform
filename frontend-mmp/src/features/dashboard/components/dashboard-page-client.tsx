@@ -139,20 +139,20 @@ export default function DashboardPage() {
           sx={{
             p: { xs: 3, md: 4 },
             borderRadius: 4,
-            bgcolor: '#5C6B40',
-            color: '#FAF7F0',
-            boxShadow: '0 18px 40px rgba(60, 73, 40, 0.18)',
+            bgcolor: '#173528',
+            color: '#F2F9EF',
+            boxShadow: '0 20px 44px rgba(20, 58, 41, 0.18)',
           }}
         >
           <Chip
             label={t('onboarding')}
             size="small"
-            sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit', fontWeight: 700 }}
+            sx={{ bgcolor: 'rgba(209,240,155,0.15)', color: '#D1F09B', fontWeight: 700 }}
           />
           <Typography variant="h5" sx={{ mt: 2, fontWeight: 750, letterSpacing: '-0.035em' }}>
             {t('welcomeTitle')}
           </Typography>
-          <Typography sx={{ mt: 1, maxWidth: 580, color: 'rgba(250,247,240,0.82)' }}>
+          <Typography sx={{ mt: 1, maxWidth: 580, color: 'rgba(242,249,239,0.72)' }}>
             {t('welcomeDescription')}
           </Typography>
         </Paper>
@@ -163,28 +163,28 @@ export default function DashboardPage() {
             sx={{
               p: { xs: 3, md: 4 },
               borderRadius: 4,
-              bgcolor: '#5C6B40',
-              color: '#FAF7F0',
-              boxShadow: '0 18px 40px rgba(60, 73, 40, 0.18)',
+              bgcolor: '#173528',
+              color: '#F2F9EF',
+              boxShadow: '0 20px 44px rgba(20, 58, 41, 0.18)',
             }}
           >
             <Chip
               label={t('organizationReady')}
               size="small"
-              sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit', fontWeight: 700 }}
+              sx={{ bgcolor: 'rgba(209,240,155,0.15)', color: '#D1F09B', fontWeight: 700 }}
             />
-            <Typography variant="h5" sx={{ mt: 2, fontWeight: 750, letterSpacing: '-0.035em' }}>
+            <Typography variant="h5" sx={{ mt: 2, fontWeight: 750, letterSpacing: '-0.045em' }}>
               {organization.activeOrganization.name}
             </Typography>
-            <Typography sx={{ mt: 1, maxWidth: 620, color: 'rgba(250,247,240,0.82)' }}>
+            <Typography sx={{ mt: 1, maxWidth: 620, color: 'rgba(242,249,239,0.72)' }}>
               {t('organizationCreated')}
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 3 }}>
-              <Chip label={`${nav('products')}: ${products.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
-              <Chip label={`${nav('customers')}: ${customers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
-              <Chip label={`${nav('orders')}: ${orders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
-              <Chip label={`${nav('suppliers')}: ${suppliers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
-              <Chip label={`${nav('purchaseOrders')}: ${purchaseOrders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'inherit' }} />
+              <Chip label={`${nav('products')}: ${products.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'inherit' }} />
+              <Chip label={`${nav('customers')}: ${customers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'inherit' }} />
+              <Chip label={`${nav('orders')}: ${orders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'inherit' }} />
+              <Chip label={`${nav('suppliers')}: ${suppliers.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'inherit' }} />
+              <Chip label={`${nav('purchaseOrders')}: ${purchaseOrders.length}`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'inherit' }} />
             </Box>
           </Paper>
 
@@ -217,14 +217,14 @@ export default function DashboardPage() {
                 helper: t('purchaseOrdersKpi'),
               },
             ].map(({ label, value, helper }) => (
-              <Paper key={label} elevation={0} sx={{ p: 3, borderRadius: 3 }}>
-                <Typography variant="body2" sx={{ color: '#8B8577', fontWeight: 700 }}>
+              <Paper key={label} elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(23,53,40,0.08)', boxShadow: '0 8px 22px rgba(23,53,40,0.04)' }}>
+                <Typography variant="body2" sx={{ color: '#668276', fontWeight: 750, fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   {label}
                 </Typography>
-                <Typography sx={{ mt: 1, fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.04em' }}>
+                <Typography sx={{ mt: 1, fontSize: { xs: '2.1rem', md: '2.4rem' }, lineHeight: 1, fontWeight: 780, letterSpacing: '-0.06em', color: '#173528' }}>
                   {value}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1, color: '#6B6455' }}>
+                <Typography variant="body2" sx={{ mt: 1.25, color: '#70877A', lineHeight: 1.5 }}>
                   {helper}
                 </Typography>
               </Paper>
@@ -239,22 +239,22 @@ export default function DashboardPage() {
             }}
           >
             {dashboardSections.map(({ href, icon: Icon, summaryKey, translationKey }) => (
-              <Paper key={href} elevation={0} sx={{ p: 3, borderRadius: 3 }}>
+              <Paper key={href} elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(23,53,40,0.08)', boxShadow: '0 8px 22px rgba(23,53,40,0.04)', transition: 'transform 160ms ease, box-shadow 160ms ease', '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 16px 28px rgba(23,53,40,0.1)' } }}>
                 <Box
                   sx={{
                     width: 42,
                     height: 42,
                     display: 'grid',
                     placeItems: 'center',
-                    borderRadius: 2.5,
-                    bgcolor: 'rgba(168,192,144,0.24)',
-                    color: '#5C6B40',
+                    borderRadius: 2,
+                    bgcolor: '#E3F1D3',
+                    color: '#2D6849',
                   }}
                 >
                   <Icon fontSize="small" />
                 </Box>
-                <Typography sx={{ mt: 2, fontWeight: 750 }}>{nav(translationKey)}</Typography>
-                <Typography variant="body2" sx={{ mt: 0.75, color: '#777266', lineHeight: 1.55 }}>
+                <Typography sx={{ mt: 2, fontWeight: 750, letterSpacing: '-0.025em', color: '#173528' }}>{nav(translationKey)}</Typography>
+                <Typography variant="body2" sx={{ mt: 0.75, color: '#70877A', lineHeight: 1.55 }}>
                   {t(summaryKey)}
                 </Typography>
                 <Link href={href} style={{ textDecoration: 'none' }}>
@@ -266,9 +266,9 @@ export default function DashboardPage() {
             ))}
           </Box>
 
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
-            <Typography sx={{ fontWeight: 750 }}>{t('activityTitle')}</Typography>
-            <Typography variant="body2" sx={{ mt: 0.5, color: '#777266' }}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(23,53,40,0.08)', boxShadow: '0 8px 22px rgba(23,53,40,0.04)' }}>
+            <Typography sx={{ fontWeight: 750, letterSpacing: '-0.025em', color: '#173528' }}>{t('activityTitle')}</Typography>
+            <Typography variant="body2" sx={{ mt: 0.5, color: '#70877A' }}>
               {isLoading ? t('loadingOrganization') : t('activityDescription')}
             </Typography>
 
@@ -288,12 +288,12 @@ export default function DashboardPage() {
                       gap: 1.5,
                       p: 2,
                       borderRadius: 2.5,
-                      bgcolor: 'rgba(92,107,64,0.04)',
+                      bgcolor: '#F4F7F3',
                     }}
                   >
                     <Box>
                       <Typography sx={{ fontWeight: 700 }}>#{order.id.slice(0, 8)}</Typography>
-                      <Typography variant="body2" sx={{ mt: 0.4, color: '#777266' }}>
+                      <Typography variant="body2" sx={{ mt: 0.4, color: '#70877A' }}>
                         {formatDateTime(order.updatedAt, locale)}
                       </Typography>
                     </Box>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                       <Typography sx={{ fontWeight: 700 }}>
                         {formatAmount(order.total, locale)}
                       </Typography>
-                      <Typography variant="body2" sx={{ mt: 0.4, color: '#777266' }}>
+                      <Typography variant="body2" sx={{ mt: 0.4, color: '#70877A' }}>
                         {ordersMessages(order.status.toLowerCase())}
                       </Typography>
                     </Box>
